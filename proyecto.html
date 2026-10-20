@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Proyecto — Bloque Maestro</title>
+<link rel="canonical" href="https://bloquemaestro.com/proyecto.html" id="canon">
 <link rel="icon" href="assets/icono_claro_sin_fondo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
@@ -19,6 +20,7 @@
 <script>
 const p = BM.byId(new URLSearchParams(location.search).get('id')) || BM.PROJECTS[0];
 document.title = `${p.short} — Bloque Maestro`;
+document.getElementById('canon').href = `https://bloquemaestro.com/proyecto.html?id=${p.id}`;
 const ph = BM.ph, initials = s => s.split(' ').filter(w => w.length > 2).slice(0, 2).map(w => w[0]).join('').toUpperCase();
 const related = BM.PROJECTS.filter(x => x.id !== p.id).sort((a, b) => (b.cat === p.cat) - (a.cat === p.cat)).slice(0, 3);
 const SECTIONS = [['resumen', 'Resumen'], ['terreno', 'Análisis del terreno'], ['materiales', 'Materiales'], ['equipos', 'Equipos y maquinaria'], ['iluminacion', 'Iluminación'], ['sostenibilidad', 'Sostenibilidad'], ['avance', 'Avance de obra'], ['equipo', 'Quién lo hace'], ['galeria', 'Galería']];
