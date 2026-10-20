@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proyectos destacados — Bloque Maestro</title>
+<meta name="description" content="La selección del editor: proyecto del mes, los más consultados y colecciones temáticas de obras.">
+<link rel="icon" href="assets/icono_claro_sin_fondo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="assets/styles.css?v=17">
+</head>
+<body data-page="destacados">
+<main class="w" id="app"></main>
+
+<script src="assets/data.js?v=4"></script>
+<script src="assets/app.js?v=7"></script>
+<script>
+const by = BM.byId, P = BM.PROJECTS;
+const catChip = c => `<span class="cchip" style="--c:${BM.CAT_COLOR[c]}">${BM.catName(c)}</span>`;
+const MONTH = by('puente-rio-claro');
+const TOP = ['torre-alameda', 'oficinas-prisma', 'ecobarrio-la-huerta', 'edificio-1928', 'hub-logistico-norte'].map(by);
+const VIEWS = [12480, 9870, 8215, 7340, 6920];
+const COLS = [
+  ['Megaobras de infraestructura', 'Puentes, túneles y estaciones que cambian el territorio.', 'fa-bridge', p => p.cat === 'infraestructura' || p.cat === 'industrial'],
+  ['Madera y bajo carbono', 'La construcción que reduce su huella sin renunciar a la escala.', 'fa-leaf', p => ['sostenible', 'equipamiento'].includes(p.cat)],
+  ['Rehabilitar es construir', 'Edificios con historia que vuelven a la vida.', 'fa-trowel-bricks', p => ['rehabilitacion', 'interiorismo'].includes(p.cat)],
+  ['Viviendas que inspiran', 'De la casa patio a la torre residencial.', 'fa-house-chimney', p => p.cat === 'residencial'],
+];
+
+document.getElementById('app').innerHTML = `
+<section class="phead bgx bg-hero ds-head">
+  <div class="crumbs"><a href="index.html">Inicio</a><i class="fa-solid fa-chevron-right"></i>Destacados</div>
+  <div class="kick">Selección del editor · Octubre 2026</div>
+  <h1>Los proyectos que están <em>marcando 2026</em></h1>
+  <p class="lead">Cada mes nuestro equipo elige las obras más relevantes por su técnica, su escala o su impacto. Esta es la selección.</p>
+  <nav class="ds-jump">${['Proyecto del mes', 'Más consultados', ...COLS.map(c => c[0])].map((n, i) => `<a href="#ds${i}" class="btn-sec btn-sm">${n}</a>`).join('')}</nav>
+</section>
+
+<!-- Proyecto del mes -->
+<section class="ds-month rv" id="ds0">
+  <a class="dm-img" href="${BM.url(MONTH)}">${BM.ph(MONTH.img[0], 1600, 1000).replace('loading="lazy"', '')}<span class="dm-badge"><i class="fa-solid fa-trophy"></i> Proyecto del mes</span></a>
+  <div class="dm-txt">
+    <div class="dm-chips">${catChip(MONTH.cat)}${BM.status(MONTH.status)}</div>
+    <h2>${MONTH.title}</h2>
+    <p>${MONTH.summary}</p>
+    <blockquote>“${MONTH.quote[0]}”<small>— ${MONTH.quote[1]}</small></blockquote>
+    <div class="dm-facts"><span><small>Vano</small><b>${MONTH.area}</b></span><span><small>Inversión</small><b>${MONTH.budget}</b></span><span><small>Avance</small><b>${MONTH.progress} %</b></span></div>
+    <div class="ctas" style="margin-top:6px"><a href="${BM.url(MONTH)}" class="btn">Ver la ficha completa <i class="fa-solid fa-arrow-right"></i></a><a href="${BM.url(MONTH)}#contactar" class="link">Solicitar información <i class="fa-solid fa-arrow-right"></i></a></div>
+  </div>
+</section>
+
+<!-- Ranking -->
+<section class="band bgx bg-light light" id="ds1">
+  <div class="sh rv"><h2><small class="mono">Ranking del mes</small>Los 5 más consultados</h2><span class="muted" style="font-size:13px">Visitas a la ficha en los últimos 30 días</span></div>
+  <ol class="rank">${TOP.map((p, i) => `
+    <li class="rk rv"><a href="${BM.url(p)}" style="--c:${BM.CAT_COLOR[p.cat]}">
+      <span class="rk-n">${i + 1}</span>${BM.ph(p.img[0], 400, 300)}
+      <span class="rk-t">${catChip(p.cat)}<b>${p.title}</b><small><i class="fa-solid fa-location-dot"></i> ${p.city} · ${p.owner.name}</small></span>
+      <span class="rk-v"><b>${VIEWS[i].toLocaleString('es')}</b><small>visitas</small><span class="rk-bar"><i style="width:${VIEWS[i] / VIEWS[0] * 100}%"></i></span></span></a></li>`).join('')}</ol>
+</section>
+
+<!-- Colecciones -->
+${COLS.map(([t, d, ic, fn], i) => {
+  const list = P.filter(fn).slice(0, 3);
+  return `<section class="band ${i % 2 ? 'bgx bg-light light' : ''} ds-col" id="ds${i + 2}">
+    <div class="sh rv"><h2><small class="mono"><i class="fa-solid ${ic}"></i> Colección</small>${t}</h2><p class="muted" style="max-width:420px">${d}</p></div>
+    <div class="pgrid">${list.map(BM.gridCard).join('')}</div>
+  </section>`;
+}).join('')}
+
+<!-- CTA -->
+<section class="band">
+  <div class="final rv"><div class="kick" style="justify-content:center">Para promotores</div><h2>¿Quieres que tu proyecto <em>esté en esta selección</em>?</h2><p class="muted" style="margin:-10px 0 26px">El plan Portada incluye presencia garantizada en destacados.</p>
+    <div class="ctas" style="justify-content:center"><a href="solicitud.html?plan=Portada" class="btn">Anunciar mi proyecto <i class="fa-solid fa-arrow-right"></i></a><a href="anunciate.html#planes" class="btn-sec">Ver planes</a></div></div>
+</section>`;
+BM.reveal();
+</script>
+</body>
+</html>

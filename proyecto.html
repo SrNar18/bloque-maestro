@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proyecto — Bloque Maestro</title>
+<link rel="icon" href="assets/icono_claro_sin_fondo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="assets/styles.css?v=17">
+</head>
+<body data-page="proyecto">
+<div class="glow"></div>
+<main class="w" id="app"></main>
+
+<script src="assets/data.js?v=4"></script>
+<script src="assets/app.js?v=7"></script>
+<script>
+const p = BM.byId(new URLSearchParams(location.search).get('id')) || BM.PROJECTS[0];
+document.title = `${p.short} — Bloque Maestro`;
+const ph = BM.ph, initials = s => s.split(' ').filter(w => w.length > 2).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+const related = BM.PROJECTS.filter(x => x.id !== p.id).sort((a, b) => (b.cat === p.cat) - (a.cat === p.cat)).slice(0, 3);
+const SECTIONS = [['resumen', 'Resumen'], ['terreno', 'Análisis del terreno'], ['materiales', 'Materiales'], ['equipos', 'Equipos y maquinaria'], ['iluminacion', 'Iluminación'], ['sostenibilidad', 'Sostenibilidad'], ['avance', 'Avance de obra'], ['equipo', 'Quién lo hace'], ['galeria', 'Galería']];
+
+document.getElementById('app').innerHTML = `
+<div class="crumbs" style="margin-top:34px"><a href="index.html">Inicio</a><i class="fa-solid fa-chevron-right"></i><a href="proyectos.html">Proyectos</a><i class="fa-solid fa-chevron-right"></i><a href="proyectos.html?cat=${p.cat}">${BM.catName(p.cat)}</a><i class="fa-solid fa-chevron-right"></i>${p.short}</div>
+<div class="phero">${ph(p.img[0], 1800, 1100).replace('loading="lazy"', 'fetchpriority="high"')}
+  <div class="in"><div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip">${BM.catName(p.cat)}</span><span class="chip">${BM.status(p.status)}</span></div>
+    <h1>${p.title}</h1><div class="loc"><i class="fa-solid fa-location-dot"></i> ${p.city} · Promueve <b>${p.owner.name}</b></div></div>
+</div>
+<div class="keyfacts">
+  <div><small>Superficie</small><b>${p.area}</b></div><div><small>Altura / plantas</small><b>${p.floors}</b></div>
+  <div><small>Inversión estimada</small><b>${p.budget}</b></div><div><small>Entrega</small><b>${p.year}</b></div>
+  <div><small>Avance</small><b>${p.progress} %</b></div>
+</div>
+
+<div class="detail">
+  <nav class="toc">${SECTIONS.map(([id, n]) => `<a href="#${id}">${n}</a>`).join('')}<a href="#contactar" style="color:var(--cyan)">Solicitar información</a></nav>
+
+  <article class="art">
+    <section id="resumen"><div class="kick">Resumen</div><h2>El proyecto</h2><p>${p.summary}</p>
+      <div class="quote">“${p.quote[0]}”<small>— ${p.quote[1]}</small></div></section>
+    <section id="terreno"><div class="kick">Geotecnia</div><h2>Análisis del terreno</h2><p>${p.terrain}</p>
+      <div class="spec">${p.terrainSpec.map(([k, v]) => `<div><small>${k}</small><b>${v}</b></div>`).join('')}</div></section>
+    <section id="materiales"><div class="kick">Materiales</div><h2>Con qué se construye</h2>
+      <table class="mat"><thead><tr><th>Elemento</th><th>Especificación</th><th>Proveedor</th></tr></thead>
+      <tbody>${p.materials.map(m => `<tr><td>${m[0]}</td><td>${m[1]}</td><td>${m[2]}</td></tr>`).join('')}</tbody></table></section>
+    <section id="equipos"><div class="kick">Equipos</div><h2>Maquinaria y medios</h2>
+      <div class="eq">${p.equipment.map(e => `<div><i class="fa-solid ${e[0]}"></i><span><b>${e[1]}</b><small>${e[2]}</small></span></div>`).join('')}</div></section>
+    <section id="iluminacion"><div class="kick">Iluminación</div><h2>Proyecto lumínico</h2><p>${p.lighting}</p></section>
+    <section id="sostenibilidad"><div class="kick">Sostenibilidad</div><h2>Eficiencia y medio ambiente</h2><p>${p.sustain}</p></section>
+    <section id="avance"><div class="kick">Estado</div><h2>Avance de obra · ${p.progress} %</h2>
+      <div class="timeline">${p.phases.map(([n, v]) => `<div class="tl-i"><span>${n}</span><div class="bar2"><i style="width:${v}%"></i></div><small>${v}%</small></div>`).join('')}</div></section>
+    <section id="equipo"><div class="kick">Equipo</div><h2>Quién lo hace</h2>
+      <div class="team">${p.team.map(([r, n]) => `<div><span class="av">${initials(n)}</span><span><b>${n}</b><small>${r}</small></span></div>`).join('')}</div></section>
+    <section id="galeria"><div class="kick">Galería</div><h2>Imágenes del proyecto</h2>
+      <div class="gal">${p.img.slice(0, 5).map((i, k) => ph(i, k ? 600 : 1000, k ? 400 : 800)).join('')}</div></section>
+  </article>
+
+  <aside class="aside"><div class="lead-card">
+    <div class="kick">Oportunidad</div><h3>¿Te interesa este proyecto?</h3>
+    <p>Solicita información y el equipo del proyecto te contactará directamente.</p>
+    <div class="owner"><span class="av">${p.owner.initials}</span><span><b>${p.owner.name}</b><small>${p.owner.type}</small></span></div>
+    <a href="#contactar" class="btn">Solicitar información <i class="fa-solid fa-arrow-right"></i></a>
+    <a href="#" class="btn-sec" onclick="event.preventDefault();this.innerHTML='<i class=\\'fa-solid fa-check\\'></i> Ficha en preparación'"><i class="fa-solid fa-file-arrow-down"></i> Descargar ficha PDF</a>
+    <div class="share"><span>Compartir:</span><a href="#"><i class="fa-brands fa-linkedin-in"></i></a><a href="#"><i class="fa-brands fa-whatsapp"></i></a><a href="#"><i class="fa-solid fa-link"></i></a></div>
+  </div></aside>
+</div>
+
+<section class="band bgx bg-light light" id="contactar" style="margin-top:20px;scroll-margin-top:90px">
+  <div class="formbox rv">
+    <div class="side"><div class="kick">Solicitar información</div><h2>Me gustaría recibir más información sobre este proyecto</h2>
+      <p>Tu solicitud llegará a <b style="color:#fff">${p.owner.name}</b> a través de Bloque Maestro.</p>
+      <ul><li><i class="fa-solid fa-check"></i>Respuesta habitual en menos de 48 h</li><li><i class="fa-solid fa-check"></i>Sin compromiso ni coste para ti</li><li><i class="fa-solid fa-check"></i>Tus datos solo se comparten con este promotor</li></ul></div>
+    <form class="lead" novalidate>
+      <div class="f"><label>Nombre y apellidos <em>*</em></label><input name="nombre" required></div>
+      <div class="f"><label>Empresa</label><input name="empresa"></div>
+      <div class="f"><label>Correo electrónico <em>*</em></label><input type="email" name="email" required></div>
+      <div class="f"><label>Teléfono</label><input type="tel" name="tel"></div>
+      <div class="f full"><label>Me interesa como…</label><div class="radios">${['Inversor', 'Proveedor', 'Profesional / técnico', 'Comprador', 'Prensa', 'Otro'].map((r, i) => `<label><input type="radio" name="perfil" ${i ? '' : 'checked'}><span>${r}</span></label>`).join('')}</div></div>
+      <div class="f full"><label>Mensaje</label><textarea name="msg" rows="4" placeholder="Cuéntanos qué te gustaría saber sobre ${p.short}…"></textarea></div>
+      <label class="check"><input type="checkbox" required> Acepto la política de privacidad y que mis datos se compartan con el promotor de este proyecto.</label>
+      <button class="btn" type="submit">Enviar solicitud <i class="fa-solid fa-paper-plane"></i></button>
+      <div class="sent"><i class="fa-solid fa-circle-check"></i><h3>¡Solicitud enviada!</h3><p>Gracias, {nombre}. ${p.owner.name} recibirá tu mensaje y te contactará pronto.</p></div>
+    </form>
+  </div>
+</section>
+
+<section class="band bgx bg-blueprint">
+  <div class="sh"><h2><small class="mono">Sigue explorando</small>Proyectos relacionados</h2><a class="link" href="proyectos.html">Ver todos <i class="fa-solid fa-arrow-right"></i></a></div>
+  <div class="pgrid">${related.map(BM.gridCard).join('')}</div>
+</section>`;
+
+/* Índice lateral: resalta la sección visible */
+const links = [...document.querySelectorAll('.toc a[href^="#"]')];
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.classList.toggle('on', a.hash === '#' + e.target.id)); }), { rootMargin: '-40% 0px -55% 0px' });
+document.querySelectorAll('.art section').forEach(s => io.observe(s));
+BM.initForms(); BM.reveal();
+</script>
+</body>
+</html>

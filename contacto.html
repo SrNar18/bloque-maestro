@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contacto — Bloque Maestro</title>
+<meta name="description" content="Contacta con el equipo de Bloque Maestro: publicidad, prensa, colaboraciones y dudas sobre proyectos.">
+<link rel="icon" href="assets/icono_claro_sin_fondo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="assets/styles.css?v=17">
+</head>
+<body data-page="contacto">
+<main class="w" id="app"></main>
+
+<script src="assets/data.js?v=4"></script>
+<script src="assets/app.js?v=7"></script>
+<script>
+const MOTIVOS = [['general', 'Consulta general', 'fa-comment-dots'], ['proyecto', 'Sobre un proyecto publicado', 'fa-building'], ['publicidad', 'Publicidad y planes', 'fa-bullhorn'], ['prensa', 'Prensa y colaboraciones', 'fa-newspaper'], ['empleo', 'Trabajar con nosotros', 'fa-briefcase']];
+const pre = new URLSearchParams(location.search);
+const m0 = MOTIVOS.some(m => m[0] === pre.get('motivo')) ? pre.get('motivo') : 'general';
+
+document.getElementById('app').innerHTML = `
+<section class="ct-hero bgx bg-hero">
+  <div>
+    <div class="crumbs"><a href="index.html">Inicio</a><i class="fa-solid fa-chevron-right"></i>Contacto</div>
+    <div class="kick">Contacto</div>
+    <h1>Hablemos de <em>construcción</em>.</h1>
+    <p class="lead">Un equipo de periodistas, arquitectos e ingenieros detrás de cada ficha. Escríbenos y te respondemos en menos de 24 horas laborables.</p>
+  </div>
+  <div class="ct-live"><span class="dot"></span><b>Equipo disponible</b><small>Lun – Vie · 8:00 a 18:00 (GMT-5)</small><div class="ct-faces">${['LM', 'AR', 'CS', 'JO'].map(i => `<span>${i}</span>`).join('')}<em>Respuesta media: 6 h</em></div></div>
+</section>
+
+<!-- Vías rápidas -->
+<section class="ct-ways">
+  <a class="cw hi" href="solicitud.html"><i class="fa-solid fa-rocket"></i><b>Quiero anunciar mi proyecto</b><small>Ve directo a la solicitud en 4 pasos.</small><span class="link">Empezar solicitud <i class="fa-solid fa-arrow-right"></i></span></a>
+  <a class="cw" href="mailto:proyectos@bloquemaestro.com"><i class="fa-solid fa-building"></i><b>Proyectos y promotores</b><small>proyectos@bloquemaestro.com</small><span class="link">Escribir <i class="fa-solid fa-arrow-right"></i></span></a>
+  <a class="cw" href="mailto:prensa@bloquemaestro.com"><i class="fa-solid fa-newspaper"></i><b>Prensa y colaboraciones</b><small>prensa@bloquemaestro.com</small><span class="link">Escribir <i class="fa-solid fa-arrow-right"></i></span></a>
+  <a class="cw" href="https://wa.me/573000000000" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i><b>WhatsApp</b><small>+57 300 000 0000</small><span class="link">Abrir chat <i class="fa-solid fa-arrow-right"></i></span></a>
+</section>
+
+<!-- Formulario + datos -->
+<section class="band ct-main">
+  <form class="ct-form" id="cf" novalidate>
+    <div class="kick">Formulario de contacto</div><h2>Envíanos un mensaje</h2>
+    <div class="f full"><label>¿Sobre qué quieres hablar? <em>*</em></label><div class="opts cols3 mot">${MOTIVOS.map(([v, n, ic]) => `<label class="opt"><input type="radio" name="motivo" value="${v}" ${v === m0 ? 'checked' : ''}><span><i class="fa-solid ${ic}"></i>${n}</span></label>`).join('')}</div></div>
+    <div class="f full cond" data-for="proyecto"><label>¿Qué proyecto? <em>*</em></label><select name="pid"><option value="">Selecciona un proyecto…</option>${BM.PROJECTS.map(p => `<option value="${p.id}">${p.short} · ${p.city}</option>`).join('')}</select></div>
+    <div class="f full cond" data-for="publicidad"><div class="hint"><i class="fa-solid fa-lightbulb"></i> ¿Quieres publicar un proyecto? Es más rápido con la <a class="link" href="solicitud.html" style="font-size:14px">solicitud en 4 pasos</a>.</div></div>
+    <div class="grid2">
+      <div class="f"><label>Nombre y apellidos <em>*</em></label><input name="nombre" required autocomplete="name"></div>
+      <div class="f"><label>Empresa</label><input name="empresa" autocomplete="organization"></div>
+      <div class="f"><label>Correo electrónico <em>*</em></label><input type="email" name="email" required autocomplete="email"></div>
+      <div class="f"><label>Teléfono</label><input type="tel" name="tel" autocomplete="tel"></div>
+    </div>
+    <div class="f full"><label>Mensaje <em>*</em></label><textarea name="msg" rows="6" required maxlength="1000" placeholder="Cuéntanos en qué podemos ayudarte…"></textarea><small class="count" id="cc">0 / 1000</small></div>
+    <label class="check"><input type="checkbox" required> Acepto la <a class="link" href="#" style="font-size:13px">política de privacidad</a>.</label>
+    <div class="ct-send"><button class="btn" type="submit">Enviar mensaje <i class="fa-solid fa-paper-plane"></i></button><small class="muted"><i class="fa-solid fa-lock"></i> Nunca compartimos tus datos.</small></div>
+    <div class="ct-ok" hidden><div class="ok-ic"><i class="fa-solid fa-check"></i></div><h3>¡Mensaje enviado!</h3><p class="muted">Gracias, <b id="okname" style="color:#fff"></b>. Te responderemos en <b style="color:#fff" id="okmail"></b> en menos de 24 h.</p><button type="button" class="btn-sec" id="again">Enviar otro mensaje</button></div>
+  </form>
+
+  <aside class="ct-info">
+    <div class="ci-map">
+      <svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs><pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="rgba(16,168,232,.12)"/></pattern></defs>
+        <rect width="400" height="260" fill="#0c1b2d"/><rect width="400" height="260" fill="url(#g)"/>
+        <path d="M-10 190 C80 160 120 210 200 170 S330 120 420 150" stroke="rgba(16,168,232,.35)" stroke-width="10" fill="none"/>
+        <path d="M60 -10 L150 270 M260 -10 L230 270 M-10 80 L410 110" stroke="rgba(255,255,255,.08)" stroke-width="6" fill="none"/>
+        <circle cx="205" cy="118" r="34" fill="rgba(16,168,232,.18)"><animate attributeName="r" values="18;40;18" dur="2.6s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0;1" dur="2.6s" repeatCount="indefinite"/></circle>
+        <circle cx="205" cy="118" r="9" fill="#10A8E8" stroke="#fff" stroke-width="3"/>
+      </svg>
+      <div class="ci-addr"><b>Oficina central</b><small>Cra. 43A #1-50, El Poblado · Medellín, Colombia</small></div>
+    </div>
+    <ul class="ci-list">
+      <li><i class="fa-regular fa-envelope"></i><span><small>Email general</small><a href="mailto:hola@bloquemaestro.com">hola@bloquemaestro.com</a></span></li>
+      <li><i class="fa-solid fa-phone"></i><span><small>Teléfono</small><a href="tel:+576040000000">+57 604 000 0000</a></span></li>
+      <li><i class="fa-regular fa-clock"></i><span><small>Horario</small>Lunes a viernes · 8:00 – 18:00</span></li>
+    </ul>
+    <div class="ci-social"><a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a><a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a><a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a><a href="#" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a></div>
+  </aside>
+</section>
+
+<!-- Preguntas rápidas -->
+<section class="band bgx bg-light light faq">
+  <div class="sh"><h2><small class="mono">Antes de escribir</small>Quizá ya tenemos la respuesta</h2></div>
+  <div class="faq2">${[
+    ['¿Cómo publico mi proyecto?', 'Rellena la <a class="link" href="solicitud.html">solicitud en 4 pasos</a>. Te llamamos en menos de 24 h para preparar la ficha.'],
+    ['¿Cuánto cuesta anunciarse?', 'Hay tres planes desde 290 USD al mes, sin permanencia. Puedes compararlos en <a class="link" href="anunciate.html#planes">planes y precios</a>.'],
+    ['Me interesa un proyecto, ¿con quién hablo?', 'Usa el formulario “Solicitar información” de la ficha del proyecto: llega directamente a su promotor.'],
+    ['¿Puedo corregir datos de una ficha publicada?', 'Sí. Escríbenos eligiendo “Sobre un proyecto publicado” y lo actualizamos en 48 h.'],
+  ].map(([q, a], i) => `<details ${i ? '' : 'open'}><summary>${q}<i class="fa-solid fa-plus"></i></summary><p>${a}</p></details>`).join('')}</div>
+</section>`;
+
+/* ---------- Formulario ---------- */
+const f = document.getElementById('cf');
+const cond = () => { const m = f.querySelector('[name=motivo]:checked').value; f.querySelectorAll('.cond').forEach(c => { const on = c.dataset.for === m; c.hidden = !on; const s = c.querySelector('select'); if (s) s.required = on; }); };
+f.addEventListener('change', cond); cond();
+f.msg.addEventListener('input', () => document.getElementById('cc').textContent = `${f.msg.value.length} / 1000`);
+f.addEventListener('submit', e => {
+  e.preventDefault(); let ok = true;
+  f.querySelectorAll('[required]').forEach(el => {
+    const bad = el.type === 'checkbox' ? !el.checked : !el.value.trim() || (el.type === 'email' && !/^\S+@\S+\.\S+$/.test(el.value));
+    (el.closest('.f') || el.closest('.check')).classList.toggle('err', bad); if (bad) ok = false;
+  });
+  if (!ok) return f.querySelector('.err input,.err select,.err textarea')?.focus();
+  document.getElementById('okname').textContent = f.nombre.value.split(' ')[0];
+  document.getElementById('okmail').textContent = f.email.value;
+  f.classList.add('done-ct'); f.querySelector('.ct-ok').hidden = false;
+});
+document.getElementById('again').onclick = () => { f.reset(); cond(); f.classList.remove('done-ct'); f.querySelector('.ct-ok').hidden = true; };
+</script>
+</body>
+</html>

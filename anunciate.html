@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anúnciate — Bloque Maestro</title>
+<meta name="description" content="Publica tu proyecto de construcción en Bloque Maestro y recibe contactos de inversores, proveedores y profesionales.">
+<link rel="icon" href="assets/icono_claro_sin_fondo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="assets/styles.css?v=17">
+</head>
+<body data-page="anunciate">
+<div class="glow"></div>
+<main class="w" id="app"></main>
+
+<script src="assets/data.js?v=4"></script>
+<script src="assets/app.js?v=7"></script>
+<script>
+const P = BM.byId('torre-alameda');
+const PLANS = [
+  { id: 'Ficha', price: '290', tag: 'Para empezar', items: ['Ficha técnica completa', 'Formulario de contacto', 'Hasta 8 imágenes', 'Visible en el catálogo'] },
+  { id: 'Destacado', price: '590', tag: 'El más elegido', hi: true, items: ['Todo lo de Ficha', 'Galería ilimitada + vídeo', '2 apariciones en newsletter', 'Informe mensual de métricas'] },
+  { id: 'Portada', price: '1.190', tag: 'Máxima visibilidad', items: ['Todo lo de Destacado', 'Posición en la portada', 'Reportaje en vídeo en obra', 'Campaña en redes + gestor'] },
+];
+const FAQ = [
+  ['¿Quién puede anunciarse?', 'Promotoras, constructoras, estudios, fondos y particulares con un proyecto en diseño, en obra o finalizado.'],
+  ['¿Vendéis o intermediáis la inversión?', 'No. Somos un medio: mostramos tu proyecto y te enviamos los contactos. Cualquier acuerdo es directamente entre las partes.'],
+  ['¿Qué información necesitáis?', 'Datos generales, imágenes y lo técnico que quieras compartir. Nosotros redactamos la ficha y la apruebas antes de publicar.'],
+  ['¿Cómo recibo los contactos?', 'En tu correo, en tiempo real, con nombre, empresa, perfil y mensaje de cada interesado.'],
+  ['¿Hay permanencia?', 'No. Los planes son mensuales y puedes cancelar cuando quieras.'],
+  ['¿Cuánto tarda en publicarse?', 'Unas 48 h desde que apruebas la ficha. La redacción suele llevar de 3 a 5 días.'],
+];
+const chips = (name, opts, sel) => opts.map(o => `<label><input type="radio" name="${name}" value="${o}" ${o === sel ? 'checked' : ''}><span>${o}</span></label>`).join('');
+
+document.getElementById('app').innerHTML = `
+<!-- 1 · HERO -->
+<section class="ad-hero full bgx bg-hero">
+  <div class="rv">
+    <div class="crumbs"><a href="index.html">Inicio</a><i class="fa-solid fa-chevron-right"></i>Anúnciate</div>
+    <div class="kick">Para promotores y constructoras</div>
+    <h1 class="display">Tu obra merece <em>ser vista</em>.</h1>
+    <p class="lead">Publica tu proyecto y recibe contactos de <b style="color:#fff">inversores, proveedores y profesionales</b> directamente en tu correo.</p>
+    <div class="ctas"><a href="solicitud.html" class="btn">Anunciar mi proyecto <i class="fa-solid fa-arrow-right"></i></a><a href="#planes" class="btn-sec">Ver planes</a></div>
+    <div class="trust"><span><i class="fa-solid fa-check"></i> Sin permanencia</span><span><i class="fa-solid fa-check"></i> Redacción incluida</span><span><i class="fa-solid fa-check"></i> Online en 48 h</span></div>
+  </div>
+  <div class="ad-vis rv">
+    <div class="mini-card">${BM.ph(P.img[0], 700, 520).replace('loading="lazy"', '')}<div class="mc-in"><span class="chip">${BM.status(P.status)}</span><b>${P.short}</b><small><i class="fa-solid fa-location-dot"></i> ${P.city}</small></div></div>
+    <div class="notif n1"><i class="fa-solid fa-envelope"></i><span><b>Nueva solicitud</b><small>Inversor · Fondo Andino Capital</small></span></div>
+    <div class="notif n2"><i class="fa-solid fa-truck-fast"></i><span><b>Nueva solicitud</b><small>Proveedor · Aceros del Valle</small></span></div>
+    <div class="notif n3"><i class="fa-solid fa-chart-line"></i><span><b>+4.812 visitas</b><small>en los últimos 30 días</small></span></div>
+  </div>
+</section>
+
+<!-- 2 · CIFRAS -->
+<section class="nums rv">
+  <div><b data-n="31" data-suf="K">0</b><span>lectores al mes</span></div>
+  <div><b data-n="37">0</b><span>contactos medios por ficha</span></div>
+  <div><b data-n="62" data-suf="%">0</b><span>lectores profesionales del sector</span></div>
+  <div><b data-n="48" data-suf=" h">0</b><span>para estar online</span></div>
+</section>
+
+<!-- 3 · CÓMO FUNCIONA -->
+<section class="band bgx bg-blueprint">
+  <div class="sh rv"><h2><small class="mono">Cómo funciona</small>Tres pasos. Cero complicaciones.</h2></div>
+  <div class="flow">
+    <div class="fl rv"><span class="fn">1</span><i class="fa-solid fa-paper-plane"></i><h3>Nos cuentas tu proyecto</h3><p>Rellenas el formulario en 2 minutos.</p></div>
+    <div class="fl rv"><span class="fn">2</span><i class="fa-solid fa-pen-ruler"></i><h3>Creamos tu ficha</h3><p>Redactamos y diseñamos; tú la apruebas.</p></div>
+    <div class="fl rv"><span class="fn">3</span><i class="fa-solid fa-inbox"></i><h3>Recibes contactos</h3><p>Cada interesado llega directo a tu correo.</p></div>
+  </div>
+</section>
+
+<!-- 4 · QUÉ OBTIENES -->
+<section class="band bgx bg-light light">
+  <div class="sh rv"><h2><small class="mono">Qué obtienes</small>Mucho más que un anuncio</h2></div>
+  <div class="gets">
+    <div class="get big rv"><div><i class="fa-solid fa-envelope-open-text"></i><h3>Contactos cualificados</h3><p>Sabes quién es, qué le interesa y cómo contactarle.</p></div>
+      <div class="lead-demo"><div class="ld-h"><span class="dot"></span>Nueva solicitud · ${P.short}</div>
+        <div class="ld-r"><small>Nombre</small><b>Carlos Méndez</b></div><div class="ld-r"><small>Perfil</small><b>Inversor</b></div><div class="ld-r"><small>Empresa</small><b>Fondo Andino Capital</b></div>
+        <div class="ld-m">“Nos interesa conocer el calendario de entrega y la estructura de inversión…”</div></div></div>
+    <div class="get rv"><i class="fa-solid fa-file-lines"></i><h3>Ficha técnica pro</h3><p>Terreno, materiales, equipos y equipo humano.</p></div>
+    <div class="get rv"><i class="fa-solid fa-bullhorn"></i><h3>Difusión</h3><p>Newsletter semanal y redes sociales.</p></div>
+    <div class="get rv"><i class="fa-solid fa-chart-pie"></i><h3>Métricas</h3><p>Visitas, contactos y perfil de interesados.</p></div>
+    <div class="get rv"><i class="fa-solid fa-medal"></i><h3>Reputación</h3><p>Tu empresa junto a los mejores proyectos.</p></div>
+  </div>
+</section>
+
+<!-- 5 · PLANES -->
+<section class="band bgx bg-aurora" id="planes">
+  <div class="sh rv" style="justify-content:center;text-align:center"><h2><small class="mono">Planes</small>Elige cómo quieres aparecer</h2></div>
+  <div class="plans2">${PLANS.map(p => `
+    <div class="plan2 ${p.hi ? 'hi' : ''} rv"><span class="tag">${p.tag}</span><h3>${p.id}</h3>
+      <div class="pr"><small>$</small>${p.price}<span>/mes</span></div>
+      <ul>${p.items.map(i => `<li><i class="fa-solid fa-check"></i>${i}</li>`).join('')}</ul>
+      <a href="solicitud.html?plan=${p.id}" class="${p.hi ? 'btn' : 'btn-sec'}">Elegir ${p.id}</a></div>`).join('')}</div>
+  <p class="muted" style="text-align:center;font-size:13px;margin-top:22px">Precios orientativos en USD · impuestos no incluidos · sin permanencia</p>
+</section>
+
+<!-- 6 · TESTIMONIO -->
+<section class="band bgx bg-photo">
+  <figure class="testi rv"><i class="fa-solid fa-quote-left"></i>
+    <blockquote>En el primer mes recibimos 23 solicitudes. Tres proveedores con los que hoy trabajamos llegaron desde la ficha de Bloque Maestro.</blockquote>
+    <figcaption><span class="av">GA</span><span><b>Andrés Villa</b><small>Director comercial · Grupo Inmobiliario Altavista</small></span></figcaption></figure>
+</section>
+
+<!-- 8 · FAQ -->
+<section class="band bgx bg-light light faq">
+  <div class="sh rv"><h2><small class="mono">Preguntas frecuentes</small>Resolvemos tus dudas</h2></div>
+  <div class="faq2">${FAQ.map(([q, a], i) => `<details class="rv" ${i ? '' : 'open'}><summary>${q}<i class="fa-solid fa-plus"></i></summary><p>${a}</p></details>`).join('')}</div>
+</section>
+
+<!-- 9 · CTA FINAL -->
+<section class="band">
+  <div class="final rv"><h2>¿Listo para que tu proyecto <em>llegue lejos</em>?</h2><a href="solicitud.html" class="btn">Anunciar mi proyecto <i class="fa-solid fa-arrow-right"></i></a></div>
+</section>`;
+
+BM.reveal();
+</script>
+</body>
+</html>

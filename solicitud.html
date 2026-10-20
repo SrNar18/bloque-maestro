@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anuncia tu proyecto — Bloque Maestro</title>
+<meta name="description" content="Solicita la publicación de tu proyecto de construcción en Bloque Maestro.">
+<link rel="icon" href="assets/icono_claro_sin_fondo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="assets/styles.css?v=17">
+</head>
+<body data-page="solicitud">
+<main class="w" id="app"></main>
+
+<script src="assets/data.js?v=4"></script>
+<script src="assets/app.js?v=7"></script>
+<script>
+const qs = new URLSearchParams(location.search);
+const PLANS = [['Ficha', '290', 'Ficha técnica + formulario de contacto'], ['Destacado', '590', 'Más alcance + newsletter + métricas'], ['Portada', '1.190', 'Portada, vídeo en obra y redes']];
+const STEPS = ['Tu proyecto', 'Detalles', 'Objetivos y plan', 'Tus datos'];
+const plan0 = PLANS.some(p => p[0] === qs.get('plan')) ? qs.get('plan') : 'Destacado';
+const opt = (name, v, label, icon, checked, type = 'radio') => `<label class="opt"><input type="${type}" name="${name}" value="${v}" ${checked ? 'checked' : ''}><span>${icon ? `<i class="fa-solid ${icon}"></i>` : ''}${label}</span></label>`;
+
+document.getElementById('app').innerHTML = `
+<section class="sol-head bgx bg-hero">
+  <div class="crumbs"><a href="index.html">Inicio</a><i class="fa-solid fa-chevron-right"></i><a href="anunciate.html">Anúnciate</a><i class="fa-solid fa-chevron-right"></i>Solicitud</div>
+  <div class="kick">Solicitud de publicación</div>
+  <h1>Anuncia tu proyecto en <em>4 pasos</em></h1>
+  <p class="lead">Cuéntanos tu obra y te contactamos en menos de 24 h para preparar la ficha. Sin compromiso y sin permanencia.</p>
+  <div class="sol-trust"><span><i class="fa-solid fa-clock"></i> 3 minutos</span><span><i class="fa-solid fa-lock"></i> Datos protegidos</span><span><i class="fa-solid fa-pen-ruler"></i> Redacción incluida</span><span><i class="fa-solid fa-rotate-left"></i> Sin permanencia</span></div>
+</section>
+
+<section class="wiz">
+  <form class="wiz-form" id="wiz" novalidate>
+    <ol class="wiz-steps" id="wsteps">${STEPS.map((s, i) => `<li class="${i ? '' : 'on'}" data-i="${i}"><span>${i + 1}</span><b>${s}</b></li>`).join('')}</ol>
+    <div class="wiz-bar"><i id="wbar"></i></div>
+
+    <!-- Paso 1 -->
+    <fieldset class="ws on" data-i="0">
+      <legend><small>Paso 1 de 4</small>¿Qué proyecto quieres publicar?</legend>
+      <div class="f full"><label>Nombre del proyecto <em>*</em></label><input name="proyecto" required placeholder="Ej. Torre Alameda" data-pv="name"></div>
+      <div class="grid2">
+        <div class="f"><label>Sector <em>*</em></label><select name="sector" required><option value="">Selecciona un sector…</option>${BM.CATS.map(c => `<option>${c.name}</option>`).join('')}</select></div>
+        <div class="f"><label>Estado de la obra <em>*</em></label><select name="estado" required><option value="">Selecciona el estado…</option><option>En diseño</option><option>En obra</option><option>Finalizado</option></select></div>
+        <div class="f"><label>Ciudad y país <em>*</em></label><input name="ciudad" required placeholder="Ej. Medellín, Colombia" data-pv="city"></div>
+        <div class="f"><label>Superficie aproximada</label><div class="suffix"><input name="area" inputmode="numeric" placeholder="18.400" data-pv="area"><span>m²</span></div></div>
+        <div class="f"><label>Fecha de entrega prevista</label><input type="month" name="entrega"></div>
+        <div class="f"><label>Inversión estimada</label><select name="inversion"><option value="">Prefiero no indicarlo</option><option>Menos de USD 1 M</option><option>USD 1 – 10 M</option><option>USD 10 – 50 M</option><option>Más de USD 50 M</option></select></div>
+      </div>
+    </fieldset>
+
+    <!-- Paso 2 -->
+    <fieldset class="ws" data-i="1">
+      <legend><small>Paso 2 de 4</small>Detalles para tu ficha técnica</legend>
+      <div class="f full"><label>¿Qué información puedes compartir? <span class="muted">(elige todas las que quieras)</span></label>
+        <div class="opts cols3">${[['Estudio del terreno', 'fa-mountain'], ['Materiales', 'fa-cubes'], ['Equipos y maquinaria', 'fa-truck-moving'], ['Iluminación', 'fa-lightbulb'], ['Sostenibilidad', 'fa-leaf'], ['Equipo humano', 'fa-people-group']].map(([n, ic], i) => opt('info', n, n, ic, i < 2, 'checkbox')).join('')}</div></div>
+      <div class="f full"><label>Imágenes o renders <span class="muted">(opcional · hasta 6)</span></label>
+        <label class="drop" id="drop"><input type="file" id="files" accept="image/*" multiple hidden><i class="fa-solid fa-cloud-arrow-up"></i><b>Arrastra tus imágenes aquí</b><small>o haz clic para elegirlas · JPG o PNG</small></label>
+        <div class="thumbs" id="thumbs"></div></div>
+      <div class="f full"><label>Describe tu proyecto en pocas líneas</label><textarea name="desc" rows="4" maxlength="600" placeholder="Qué es, qué lo hace especial, materiales o soluciones destacadas…" data-count="dc"></textarea><small class="count" id="dc">0 / 600</small></div>
+    </fieldset>
+
+    <!-- Paso 3 -->
+    <fieldset class="ws" data-i="2">
+      <legend><small>Paso 3 de 4</small>¿Qué buscas con la publicación?</legend>
+      <div class="f full"><label>Quiero recibir contactos de… <em>*</em></label><div class="opts cols3" data-min="1">${[['Inversores', 'fa-chart-line'], ['Proveedores', 'fa-truck-ramp-box'], ['Profesionales', 'fa-compass-drafting'], ['Compradores', 'fa-key'], ['Prensa', 'fa-newspaper'], ['Visibilidad de marca', 'fa-star']].map(([n, ic], i) => opt('busca', n, n, ic, i === 0, 'checkbox')).join('')}</div><small class="err-msg">Elige al menos una opción.</small></div>
+      <div class="f full"><label>Plan de interés</label>
+        <div class="plan-pick">${PLANS.map(([n, pr, d]) => `<label class="pp"><input type="radio" name="plan" value="${n}" ${n === plan0 ? 'checked' : ''}><span>${n === 'Destacado' ? '<em>Más elegido</em>' : ''}<b>${n}</b><strong>$${pr}<small>/mes</small></strong><small>${d}</small></span></label>`).join('')}
+          <label class="pp"><input type="radio" name="plan" value="Asesoría"><span><b>Aún no lo sé</b><strong><i class="fa-regular fa-comments"></i></strong><small>Te asesoramos en la llamada</small></span></label></div>
+        <a class="link" href="anunciate.html#planes" target="_blank" style="margin-top:10px">Comparar planes en detalle <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+    </fieldset>
+
+    <!-- Paso 4 -->
+    <fieldset class="ws" data-i="3">
+      <legend><small>Paso 4 de 4</small>¿Cómo te contactamos?</legend>
+      <div class="grid2">
+        <div class="f"><label>Nombre y apellidos <em>*</em></label><input name="nombre" required autocomplete="name"></div>
+        <div class="f"><label>Cargo</label><input name="cargo" placeholder="Ej. Director comercial"></div>
+        <div class="f"><label>Empresa <em>*</em></label><input name="empresa" required autocomplete="organization" data-pv="owner"></div>
+        <div class="f"><label>Correo electrónico <em>*</em></label><input type="email" name="email" required autocomplete="email"></div>
+        <div class="f"><label>Teléfono</label><input type="tel" name="tel" autocomplete="tel" placeholder="+57 300 000 0000"></div>
+        <div class="f"><label>Prefiero que me contacten por</label><div class="opts cols3 mini">${opt('canal', 'Email', 'Email', 'fa-envelope', true)}${opt('canal', 'Teléfono', 'Teléfono', 'fa-phone')}${opt('canal', 'WhatsApp', 'WhatsApp', '')}</div></div>
+      </div>
+      <label class="check"><input type="checkbox" name="ok" required> He leído y acepto la <a class="link" href="#" style="font-size:13px">política de privacidad</a> y que Bloque Maestro me contacte sobre esta solicitud.</label>
+      <label class="check"><input type="checkbox" name="nl"> Quiero recibir la newsletter semanal con nuevos proyectos.</label>
+    </fieldset>
+
+    <div class="wiz-nav">
+      <button type="button" class="btn-sec" id="back"><i class="fa-solid fa-arrow-left"></i> Atrás</button>
+      <span class="muted" id="wcount">Paso 1 de 4</span>
+      <button type="button" class="btn" id="next">Continuar <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </form>
+
+  <!-- Confirmación -->
+  <div class="wiz-done" id="done" hidden>
+    <div class="ok-ic"><i class="fa-solid fa-check"></i></div>
+    <div class="kick" style="justify-content:center">Solicitud enviada</div>
+    <h2>¡Gracias, <span id="dname"></span>!</h2>
+    <p class="muted">Hemos recibido la solicitud de <b id="dproj" style="color:#fff"></b>. Te enviamos una copia a <b id="dmail" style="color:#fff"></b>.</p>
+    <ol class="next-steps">
+      <li><i class="fa-solid fa-phone"></i><b>En menos de 24 h</b><small>Te llamamos para conocer el proyecto y resolver dudas.</small></li>
+      <li><i class="fa-solid fa-pen-ruler"></i><b>De 3 a 5 días</b><small>Redactamos la ficha técnica y la revisas.</small></li>
+      <li><i class="fa-solid fa-rocket"></i><b>48 h tras aprobarla</b><small>Publicamos y empiezas a recibir contactos.</small></li>
+    </ol>
+    <div class="ctas" style="justify-content:center"><a href="proyectos.html" class="btn">Ver proyectos publicados <i class="fa-solid fa-arrow-right"></i></a><a href="index.html" class="btn-sec">Volver al inicio</a></div>
+  </div>
+
+  <!-- Vista previa -->
+  <section class="pv" id="pv">
+    <div class="pv-top">
+      <div><div class="kick">Vista previa en vivo</div><h3>Así se verá tu proyecto en Bloque Maestro</h3><p class="muted">Se actualiza mientras rellenas el formulario. Cambia de plan para comparar cómo aparecería.</p></div>
+      <div class="pv-tabs" id="pvtabs" role="tablist">${PLANS.map(([n]) => `<button type="button" class="btn-sec btn-sm" data-p="${n}" role="tab">${n}</button>`).join('')}</div>
+    </div>
+    <div class="pv-grid">
+      <div class="pv-frame"><div class="pv-bar"><i></i><i></i><i></i><span id="pvurl">bloquemaestro.com/proyectos</span></div><div class="pv-stage" id="pvstage"></div></div>
+      <div class="pv-aside">
+        <div class="pv-plan" id="pvplan"></div>
+        <div class="pv-help"><i class="fa-regular fa-comments"></i><div><b>¿Prefieres hablarlo?</b><small>Escríbenos a <a class="link" href="mailto:proyectos@bloquemaestro.com" style="font-size:13px">proyectos@bloquemaestro.com</a> o <a class="link" href="contacto.html" style="font-size:13px">visita contacto</a>.</small></div></div>
+      </div>
+    </div>
+  </section>
+</section>`;
+
+/* ---------- Lógica del asistente ---------- */
+const form = document.getElementById('wiz'), steps = [...form.querySelectorAll('.ws')], dots = [...document.querySelectorAll('#wsteps li')];
+let cur = 0;
+function go(n, scroll = true) {
+  cur = n;
+  steps.forEach((s, i) => s.classList.toggle('on', i === n));
+  dots.forEach((d, i) => { d.classList.toggle('on', i === n); d.classList.toggle('done', i < n); });
+  document.getElementById('wbar').style.width = ((n + 1) / steps.length * 100) + '%';
+  document.getElementById('back').style.visibility = n ? 'visible' : 'hidden';
+  document.getElementById('next').innerHTML = n === steps.length - 1 ? 'Enviar solicitud <i class="fa-solid fa-paper-plane"></i>' : 'Continuar <i class="fa-solid fa-arrow-right"></i>';
+  document.getElementById('wcount').textContent = `Paso ${n + 1} de ${steps.length}`;
+  if (scroll) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function valid(step) {
+  let ok = true;
+  step.querySelectorAll('[required]').forEach(el => {
+    const bad = el.type === 'checkbox' ? !el.checked : !el.value.trim() || (el.type === 'email' && !/^\S+@\S+\.\S+$/.test(el.value));
+    (el.closest('.f') || el.closest('.check')).classList.toggle('err', bad); if (bad) ok = false;
+  });
+  step.querySelectorAll('[data-min]').forEach(g => { const bad = !g.querySelector('input:checked'); g.closest('.f').classList.toggle('err', bad); if (bad) ok = false; });
+  if (!ok) step.querySelector('.err input, .err textarea')?.focus();
+  return ok;
+}
+document.getElementById('next').onclick = () => {
+  if (!valid(steps[cur])) return;
+  if (cur < steps.length - 1) return go(cur + 1);
+  const v = n => form.elements[n].value;
+  document.getElementById('dname').textContent = v('nombre').split(' ')[0];
+  document.getElementById('dproj').textContent = v('proyecto');
+  document.getElementById('dmail').textContent = v('email');
+  form.hidden = true; document.getElementById('done').hidden = false;
+  document.querySelector('.wiz').classList.add('sent');
+  scrollTo({ top: 0, behavior: 'smooth' });
+};
+document.getElementById('back').onclick = () => go(cur - 1);
+dots.forEach((d, i) => d.onclick = () => { if (i < cur || (i === cur + 1 && valid(steps[cur]))) go(i); });
+form.addEventListener('change', e => { const g = e.target.closest('[data-min]'); if (g) g.closest('.f').classList.remove('err'); });
+
+/* ---------- Vista previa en vivo ---------- */
+const $ = id => document.getElementById(id);
+/* Dónde aparece el proyecto según el plan */
+const WHERE = {
+  Ficha: [['fa-table-cells-large', 'Catálogo de proyectos'], ['fa-magnifying-glass', 'Buscador de la web'], ['fa-envelope-open-text', 'Ficha con formulario de contacto']],
+  Destacado: [['fa-star', 'Destacado en “Recién publicados”'], ['fa-newspaper', '2 apariciones en la newsletter'], ['fa-chart-line', 'Informe mensual de métricas']],
+  Portada: [['fa-display', 'Galería de portada del inicio'], ['fa-trophy', 'Página de Destacados'], ['fa-video', 'Reportaje en vídeo + redes sociales']],
+};
+const ORDER = ['Ficha', 'Destacado', 'Portada'];
+let view = null; // plan que se está viendo (null = el elegido en el formulario)
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function preview() {
+  const el = form.elements, sel = (form.querySelector('[name=plan]:checked') || {}).value;
+  const plan = view || (ORDER.includes(sel) ? sel : 'Ficha');
+  const d = {
+    name: esc(el.proyecto.value.trim() || 'Nombre de tu proyecto'), city: esc(el.ciudad.value.trim() || 'Ciudad, país'),
+    area: esc(el.area.value.trim() || '—'), owner: esc(el.empresa.value.trim() || 'Tu empresa'),
+    desc: esc(el.desc.value.trim() || 'Aquí aparecerá la descripción de tu proyecto: qué es, qué lo hace especial y sus soluciones técnicas más destacadas.'),
+    sec: el.sector.value || 'Sector', st: el.estado.value || 'Estado',
+  };
+  const c = BM.CATS.find(x => x.name === el.sector.value), col = c ? BM.CAT_COLOR[c.id] : '#8a98a8';
+  const stc = { 'En diseño': 'st-dis', 'En obra': 'st-obra', 'Finalizado': 'st-fin' }[d.st] || '';
+  const av = d.owner.split(' ').filter(w => w.length > 2).slice(0, 2).map(w => w[0]).join('').toUpperCase() || 'TU';
+  /* Sin foto subida: imagen de ejemplo del sector elegido, marcada como tal */
+  const sample = BM.PROJECTS.find(p => c && p.cat === c.id) || BM.PROJECTS[0];
+  const img = imgs[0] ? `<img src="${imgs[0]}" alt="">`
+    : `<img src="${BM.img(sample.img[0], plan === 'Portada' ? 1400 : 700, plan === 'Portada' ? 800 : 500)}" alt=""><span class="pv-sample"><i class="fa-regular fa-image"></i> Imagen de ejemplo · sube la tuya en el paso 2</span>`;
+  const chip = `<span class="cchip" style="--c:${col}">${d.sec}</span>`, status = `<span class="status ${stc}">${d.st}</span>`;
+  const slug = (el.proyecto.value.trim() || 'tu-proyecto').toLowerCase().normalize('NFD').replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+  let html;
+  if (plan === 'Ficha') {
+    const others = BM.PROJECTS.slice(2, 4);
+    const ghost = p => `<div class="pvc ghost"><div class="pvc-i">${BM.ph(p.img[0], 400, 280)}</div><div class="pvc-b"><span class="cchip" style="--c:#8a98a8">${BM.catName(p.cat)}</span><b>${p.short}</b><small>${p.city}</small></div></div>`;
+    html = `<div class="pv-ficha"><div class="pv-crumb">Proyectos · ${d.sec}</div><div class="pv-row3">${ghost(others[0])}
+      <div class="pvc you"><span class="you-tag">Tu proyecto</span><div class="pvc-i">${img}<span class="cchip pvc-chip" style="--c:${col}">${d.sec}</span></div><div class="pvc-b">${status}<b>${d.name}</b><small><i class="fa-solid fa-location-dot"></i> ${d.city}</small>
+        <div class="pvc-f"><span><b>${d.area} m²</b>Superficie</span><span><b>${d.owner}</b>Promotor</span></div><span class="link">Ver ficha del proyecto <i class="fa-solid fa-arrow-right"></i></span></div></div>
+      ${ghost(others[1])}</div></div>`;
+    $('pvurl').textContent = 'bloquemaestro.com/proyectos';
+  } else if (plan === 'Destacado') {
+    html = `<div class="pv-dest"><div class="pv-sec-h"><small>04 — Último</small><b>Recién publicados</b></div>
+      <div class="pvd" style="--c:${col}"><div class="pvd-i">${img}<span class="pv-badge"><i class="fa-solid fa-star"></i> Destacado</span></div>
+        <div class="pvd-b"><div class="pvd-top"><span class="new">Nuevo</span>${chip}${status}</div><b>${d.name}</b><p>${d.desc}</p>
+          <div class="pvd-f"><span><small>Superficie</small><b>${d.area} m²</b></span><span><small>Ubicación</small><b>${d.city}</b></span><span><small>Promotor</small><b>${d.owner}</b></span></div>
+          <span class="link">Leer la ficha completa <i class="fa-solid fa-arrow-right"></i></span></div></div>
+      <div class="pvd-nl"><i class="fa-solid fa-envelope"></i> También aparece en la <b>newsletter</b> de los lunes</div></div>`;
+    $('pvurl').textContent = 'bloquemaestro.com';
+  } else {
+    html = `<div class="pv-port"><div class="pvp-bg">${img}</div><div class="pvp-shade"></div>
+      <div class="pvp-nav"><span class="pvp-logo"><img src="assets/logo_oscuro_horizontal.png" alt=""></span><span class="pvp-links"><i></i><i></i><i></i></span><span class="pvp-cta">Anuncia tu proyecto</span></div>
+      <span class="pvp-arr l"><i class="fa-solid fa-chevron-left"></i></span><span class="pvp-arr r"><i class="fa-solid fa-chevron-right"></i></span>
+      <div class="pvp-txt"><span class="pvp-k">Proyectos 2026</span><b>${d.name}</b><p>${d.city} · ${d.owner}</p><div class="pvp-btns"><span class="b1">Ver proyecto</span><span class="b2">Solicitar información</span></div></div>
+      <div class="pvp-bar"><span class="lbl">En portada</span><b>${d.name}</b><small>${d.sec} · ${d.city}</small><em>01 / 05</em></div></div>`;
+    $('pvurl').textContent = 'bloquemaestro.com · portada';
+  }
+  $('pvstage').innerHTML = html;
+  $('pvstage').dataset.plan = plan;
+  const price = (PLANS.find(p => p[0] === plan) || [])[1];
+  const idx = ORDER.indexOf(plan), list = ORDER.slice(0, idx + 1).flatMap(p => WHERE[p].map(w => [...w, p !== plan]));
+  $('pvplan').innerHTML = `<div class="pp-h"><span>Plan</span><b>${plan}</b><strong>$${price}<small>/mes</small></strong></div>
+    <small class="pp-sub">Tu proyecto aparecerá en:</small><ul>${list.map(([ic, t, inh]) => `<li class="${inh ? 'inh' : ''}"><i class="fa-solid ${ic}"></i>${t}</li>`).join('')}</ul>
+    ${sel === plan ? '<span class="pp-ok"><i class="fa-solid fa-circle-check"></i> Es el plan que has elegido</span>' : `<button type="button" class="btn btn-sm" id="pvuse" data-p="${plan}">Elegir plan ${plan}</button>`}`;
+  $('pvtabs').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.p === plan));
+}
+$('pvtabs').onclick = e => { const b = e.target.closest('button'); if (b) { view = b.dataset.p; preview(); } };
+$('pvplan').onclick = e => { const b = e.target.closest('#pvuse'); if (b) { const r = form.querySelector(`[name=plan][value="${b.dataset.p}"]`); if (r) r.checked = true; view = null; preview(); } };
+form.addEventListener('input', preview);
+form.addEventListener('change', e => { if (e.target.name === 'plan') view = null; preview(); });
+
+/* ---------- Imágenes (solo vista local) ---------- */
+const files = $('files'), drop = $('drop'), thumbs = $('thumbs'); let imgs = [];
+function addFiles(list) {
+  [...list].filter(f => f.type.startsWith('image/')).slice(0, 6 - imgs.length).forEach(f => { imgs.push(URL.createObjectURL(f)); });
+  thumbs.innerHTML = imgs.map((u, i) => `<div class="th"><img src="${u}" alt=""><button type="button" data-i="${i}" aria-label="Quitar"><i class="fa-solid fa-xmark"></i></button>${i ? '' : '<span>Principal</span>'}</div>`).join('');
+  preview();
+}
+files.onchange = () => addFiles(files.files);
+thumbs.onclick = e => { const b = e.target.closest('button'); if (b) { imgs.splice(+b.dataset.i, 1); addFiles([]); } };
+['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => addFiles(e.dataTransfer.files));
+
+/* Contador de caracteres */
+form.querySelectorAll('[data-count]').forEach(t => t.addEventListener('input', () => $(t.dataset.count).textContent = `${t.value.length} / ${t.maxLength}`));
+preview();
+go(0, false);
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proyectos — Bloque Maestro</title>
+<link rel="icon" href="assets/icono_claro_sin_fondo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="assets/styles.css?v=17">
+</head>
+<body data-page="proyectos">
+<div class="glow"></div>
+<main class="w">
+  <section class="phead bgx bg-hero">
+    <div class="crumbs"><a href="index.html">Inicio</a><i class="fa-solid fa-chevron-right"></i><span id="crumb">Proyectos</span></div>
+    <div class="kick" id="kick">Catálogo de obras</div>
+    <h1 id="ttl">Todos los proyectos</h1>
+    <p class="lead" id="desc">Fichas técnicas de proyectos reales: materiales, equipos, terreno, iluminación y el equipo que los hace posibles.</p>
+  </section>
+
+  <div class="toolbar">
+    <label class="search"><i class="fa-solid fa-magnifying-glass muted"></i><input id="q" placeholder="Busca por nombre, ciudad, material o empresa…"></label>
+    <select id="st"><option value="">Todos los estados</option><option value="obra">En obra</option><option value="fin">Finalizado</option><option value="dis">En diseño</option></select>
+    <select id="ord"><option value="new">Más recientes</option><option value="az">A–Z</option></select>
+  </div>
+  <div class="filters" id="filters"></div>
+  <div class="count" id="count"></div>
+  <div class="pgrid" id="grid"></div>
+
+  <section class="band bgx bg-aurora" style="margin-top:60px">
+    <div class="adband">
+      <div class="txt"><div class="kick">¿Tienes un proyecto?</div><h2>Haz que tu obra aparezca aquí</h2><p class="muted">Publicamos tu ficha técnica y te enviamos las solicitudes de información de inversores, proveedores y profesionales.</p>
+        <div class="ctas"><a href="solicitud.html" class="btn">Anunciar mi proyecto <i class="fa-solid fa-arrow-right"></i></a><a href="anunciate.html#planes" class="btn-sec">Ver planes</a></div></div>
+      <div class="vis"><div class="ph"><img src="" id="adimg" alt=""></div></div>
+    </div>
+  </section>
+</main>
+
+<script src="assets/data.js?v=4"></script>
+<script src="assets/app.js?v=7"></script>
+<script>
+const qs = new URLSearchParams(location.search);
+let cat = qs.get('cat') || '';
+const $ = id => document.getElementById(id);
+$('adimg').src = BM.img(12, 900, 700);
+$('q').value = qs.get('q') || '';
+
+function renderFilters() {
+  $('filters').innerHTML = [{ id: '', name: 'Todos' }, ...BM.CATS].map(c =>
+    `<button class="btn-sec btn-sm ${c.id === cat ? 'on' : ''}" data-c="${c.id}">${c.icon ? `<i class="fa-solid ${c.icon}"></i>` : ''}${c.name}</button>`).join('');
+  $('filters').querySelectorAll('button').forEach(b => b.onclick = () => { cat = b.dataset.c; history.replaceState(null, '', cat ? '?cat=' + cat : 'proyectos.html'); render(); });
+}
+function render() {
+  renderFilters();
+  const c = BM.CATS.find(x => x.id === cat);
+  $('ttl').textContent = c ? `Proyectos · ${c.name}` : 'Todos los proyectos';
+  $('crumb').innerHTML = c ? `<a href="proyectos.html">Proyectos</a><i class="fa-solid fa-chevron-right"></i>${c.name}` : 'Proyectos';
+  $('kick').textContent = c ? c.desc : 'Catálogo de obras';
+  document.title = (c ? c.name + ' — ' : 'Proyectos — ') + 'Bloque Maestro';
+  const q = $('q').value.trim().toLowerCase(), st = $('st').value;
+  let list = BM.PROJECTS.filter(p => (!cat || p.cat === cat) && (!st || p.status === st) &&
+    (!q || JSON.stringify([p.title, p.city, p.owner.name, p.materials, p.team]).toLowerCase().includes(q)));
+  list = $('ord').value === 'az' ? list.sort((a, b) => a.short.localeCompare(b.short)) : list.sort((a, b) => b.year - a.year);
+  $('count').textContent = `${list.length} proyecto${list.length === 1 ? '' : 's'}`;
+  $('grid').innerHTML = list.length ? list.map(BM.gridCard).join('')
+    : `<div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-helmet-safety" style="font-size:30px;color:var(--cyan)"></i><p style="margin:14px 0 18px">Aún no hay proyectos con estos filtros.</p><a href="solicitud.html" class="link">¿Tienes uno? Anúncialo aquí <i class="fa-solid fa-arrow-right"></i></a></div>`;
+  BM.reveal();
+}
+['q', 'st', 'ord'].forEach(id => $(id).addEventListener('input', render));
+render();
+</script>
+</body>
+</html>
