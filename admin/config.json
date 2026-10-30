@@ -1,5 +1,12 @@
 {
  "repo": "SrNar18/bloque-maestro",
  "branch": "main",
- "users": []
+ "users": [
+  {
+   "user": "camilo",
+   "salt": "xOU2oe1JsWy/WF3kLZtBMQ==",
+   "iv": "75iIwCXT3POUVrfc",
+   "data": "M0lNeyeqjhw3TfR2DU6PhgG0VOYy9mrfT8UE/enLv0Wc1eEz9mdkzHx30P5DM8+puSdhrcDvwW7XjCwn2dCT7g3dAbfu0xITnLAoB54i0CJukE4PxWbC8bOpaNE6LGukz8/myNTFq8W2e8pyBA=="
+  }
+ ]
 }
