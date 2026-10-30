@@ -17,9 +17,10 @@
 <body data-page="destacados">
 <main class="w" id="app"></main>
 
-<script>/* Contenido editable desde /admin (con ?preview muestra el borrador del panel) */
-(function () { try { var d = (/[?&]preview/.test(location.search) || window.top !== window) && localStorage.getItem('bm_preview'); if (d) { window.BM_CONTENT = JSON.parse(d); return; } } catch (e) {}
-  document.write('<script src="assets/content.js?t=' + Math.floor(Date.now() / 6e4) + '"><\/script>'); })();</script>
+<script>/* Contenido editable desde /admin (?preview muestra el borrador del panel, ?edit abre el editor visual) */
+(function () { var q = location.search, f = window.top !== window, d; try { d = (/[?&](preview|edit)/.test(q) || f) && localStorage.getItem('bm_preview'); } catch (e) {}
+  if (d) window.BM_CONTENT = JSON.parse(d); else document.write('<script src="assets/content.js?t=' + Math.floor(Date.now() / 6e4) + '"><\/script>');
+  if (f && /[?&]edit/.test(q)) document.write('<script src="admin/inline.js?v=2"><\/script>'); })();</script>
 <script src="assets/data.js?v=5"></script>
 <script src="assets/app.js?v=8"></script>
 <script>

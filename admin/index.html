@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="admin.css?v=1">
+<link rel="stylesheet" href="admin.css?v=2">
 </head>
 <body>
 
@@ -66,6 +66,7 @@
       <div class="top-act">
         <span class="pending" id="pending" hidden></span>
         <button class="btn-sec" id="discard" hidden><i class="fa-solid fa-rotate-left"></i> Descartar</button>
+        <button class="btn-sec" id="visual"><i class="fa-solid fa-wand-magic-sparkles"></i> Editor visual</button>
         <button class="btn-sec" id="preview"><i class="fa-solid fa-eye"></i> Vista previa</button>
         <button class="btn" id="publish" disabled><i class="fa-solid fa-cloud-arrow-up"></i> Publicar</button>
       </div>
@@ -76,14 +77,15 @@
 
 <!-- Vista previa -->
 <div class="pv" id="pv" hidden>
-  <div class="pv-bar"><b>Vista previa (sin publicar)</b><select id="pvpage"></select>
+  <div class="pv-bar"><b id="pvtitle">Vista previa (sin publicar)</b><select id="pvpage"></select><span class="pv-hint" id="pvhint" hidden><i class="fa-solid fa-i-cursor"></i> Haz clic en cualquier texto para editarlo</span>
     <div class="pv-dev"><button class="icon on" data-w="100%" title="Escritorio"><i class="fa-solid fa-desktop"></i></button><button class="icon" data-w="390px" title="Móvil"><i class="fa-solid fa-mobile-screen"></i></button></div>
+    <span class="pending" id="pvpending" hidden>Sin publicar</span><button class="btn btn-sm" id="pvpub" hidden><i class="fa-solid fa-cloud-arrow-up"></i> Publicar</button>
     <button class="icon" id="pvx" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button></div>
   <div class="pv-frame"><iframe id="pvf" title="Vista previa"></iframe></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script src="admin.js?v=1"></script>
+<script src="admin.js?v=2"></script>
 </body>
 </html>

@@ -131,6 +131,9 @@ label>input,label>select,label>textarea{margin-top:6px;font-weight:400;font-size
 .pv-bar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--navy);color:#fff}
 .pv-bar select{width:auto;max-width:280px;padding:6px 10px;color:var(--ink)}
 .pv-dev{margin-left:auto;display:flex;gap:4px}
+.pv-hint{font-size:13px;color:#9fd8f3;display:flex;align-items:center;gap:6px}
+.pv-bar .pending{color:#f5b84a}
+@media (max-width:860px){.pv-hint{display:none!important}.pv-bar{flex-wrap:wrap}}
 .pv-bar .icon{color:#9fb0c1}.pv-bar .icon:hover,.pv-bar .icon.on{background:rgba(255,255,255,.1);color:#fff}
 .pv-frame{flex:1;display:flex;justify-content:center;overflow:auto;padding:0}
 .pv-frame iframe{border:0;background:#fff;width:100%;height:100%;transition:width .2s}

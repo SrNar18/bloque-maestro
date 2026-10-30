@@ -102,6 +102,7 @@ window.BM_CONTENT = `;
     const d = isDirty();
     $('#publish').disabled = !d; $('#discard').hidden = !d; $('#pending').hidden = !d;
     $('#pending').textContent = 'Cambios sin publicar';
+    $('#pvpending').hidden = !d || !pvEdit; $('#pvpub').disabled = !d;
   }
   addEventListener('beforeunload', e => { if (STATE && isDirty()) { e.preventDefault(); e.returnValue = ''; } });
 
@@ -501,17 +502,45 @@ window.BM_CONTENT = `;
     return s;
   }
   const PV_PAGES = [['index.html', 'Inicio'], ['proyectos.html', 'Proyectos'], ['destacados.html', 'Destacados'], ['anunciate.html', 'Para promotores'], ['contacto.html', 'Contacto'], ['solicitud.html', 'Solicitud']];
-  function openPreview() {
-    try { localStorage.setItem('bm_preview', draftForPreview()); }
-    catch { try { localStorage.setItem('bm_preview', JSON.stringify(STATE)); toast('Las imágenes nuevas son demasiado grandes para la vista previa: se verán al publicar.'); } catch { return toast('No se pudo preparar la vista previa.', true); } }
+  let pvEdit = false, saveT;
+  const saveDraft = () => {
+    try { localStorage.setItem('bm_preview', draftForPreview()); return true; }
+    catch { try { localStorage.setItem('bm_preview', JSON.stringify(STATE)); toast('Las imágenes nuevas son demasiado grandes para la vista previa: se verán al publicar.'); return true; } catch { toast('No se pudo preparar la vista previa.', true); return false; } }
+  };
+  /* Vista previa (solo mirar) o editor visual (clic en un texto para cambiarlo) */
+  function openPreview(edit) {
+    if (!saveDraft()) return;
+    pvEdit = edit;
+    $('#pvtitle').textContent = edit ? 'Editor visual' : 'Vista previa (sin publicar)';
+    $('#pvhint').hidden = !edit; $('#pvpub').hidden = !edit;
     const sel = $('#pvpage'), pages = [...PV_PAGES];
     if (currentPage.startsWith('proyecto.html')) { const p = STATE.projects.find(x => currentPage.endsWith(`=${x.id}`)); pages.unshift([currentPage, `Ficha: ${p ? p.short : ''}`]); }
     sel.replaceChildren(...pages.map(([v, t]) => h('option', { value: v, selected: v === currentPage }, t)));
-    const go = () => $('#pvf').src = `../${sel.value}${sel.value.includes('?') ? '&' : '?'}preview=1`;
-    sel.onchange = go; go(); $('#pv').hidden = false;
+    const go = () => $('#pvf').src = `../${sel.value}${sel.value.includes('?') ? '&' : '?'}${edit ? 'edit' : 'preview'}=1`;
+    sel.onchange = go; go(); $('#pv').hidden = false; dirty();
   }
-  $('#preview').onclick = openPreview;
-  $('#pvx').onclick = () => { $('#pv').hidden = true; $('#pvf').src = 'about:blank'; try { localStorage.removeItem('bm_preview'); } catch {} };
+  $('#preview').onclick = () => openPreview(false);
+  $('#visual').onclick = () => openPreview(true);
+  $('#pvpub').onclick = () => $('#publish').click();
+  /* Cambios que llegan desde el editor visual */
+  addEventListener('message', e => {
+    if (e.origin !== location.origin || !e.data || !STATE) return;
+    if (e.data.type === 'bm-edit' && pvEdit) {
+      const path = e.data.path; let o = STATE;
+      for (const k of path.slice(0, -1)) { o = o[k]; if (o == null) return; }
+      o[path.at(-1)] = e.data.value; dirty();
+      clearTimeout(saveT); saveT = setTimeout(saveDraft, 300);
+    }
+    if (e.data.type === 'bm-page') {
+      const sel = $('#pvpage'), v = e.data.page || 'index.html';
+      if (![...sel.options].some(o => o.value === v)) {
+        const id = new URLSearchParams(v.split('?')[1] || '').get('id'), p = STATE.projects.find(x => x.id === id);
+        sel.prepend(h('option', { value: v }, p ? `Ficha: ${p.short}` : v));
+      }
+      sel.value = v;
+    }
+  });
+  $('#pvx').onclick = () => { $('#pv').hidden = true; $('#pvf').src = 'about:blank'; try { localStorage.removeItem('bm_preview'); } catch {} if (pvEdit) route(); pvEdit = false; };
   document.querySelectorAll('.pv-dev .icon').forEach(b => b.onclick = () => {
     document.querySelectorAll('.pv-dev .icon').forEach(x => x.classList.toggle('on', x === b)); $('#pvf').style.width = b.dataset.w;
   });
