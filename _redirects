@@ -1,4 +1,6 @@
 # MODO MANTENIMIENTO (web apagada)
 # Para volver a encender la web: borrar este archivo (o las dos reglas de abajo) y subir el cambio.
 /assets/*  /assets/:splat      200
+# El panel de administración sigue accesible durante el mantenimiento
+/admin/*   /admin/:splat      200
 /*         /mantenimiento.html  503!

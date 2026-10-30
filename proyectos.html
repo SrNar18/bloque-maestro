@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="assets/styles.css?v=17">
+<link rel="stylesheet" href="assets/styles.css?v=18">
 </head>
 <body data-page="proyectos">
 <div class="glow"></div>
@@ -34,20 +34,26 @@
 
   <section class="band bgx bg-aurora" style="margin-top:60px">
     <div class="adband">
-      <div class="txt"><div class="kick">¿Tienes un proyecto?</div><h2>Haz que tu obra aparezca aquí</h2><p class="muted">Publicamos tu ficha técnica y te enviamos las solicitudes de información de inversores, proveedores y profesionales.</p>
+      <div class="txt"><div class="kick" id="adk">¿Tienes un proyecto?</div><h2 id="adt">Haz que tu obra aparezca aquí</h2><p class="muted" id="adp">Publicamos tu ficha técnica y te enviamos las solicitudes de información de inversores, proveedores y profesionales.</p>
         <div class="ctas"><a href="solicitud.html" class="btn">Anunciar mi proyecto <i class="fa-solid fa-arrow-right"></i></a><a href="anunciate.html#planes" class="btn-sec">Ver planes</a></div></div>
       <div class="vis"><div class="ph"><img src="" id="adimg" alt=""></div></div>
     </div>
   </section>
 </main>
 
-<script src="assets/data.js?v=4"></script>
-<script src="assets/app.js?v=7"></script>
+<script>/* Contenido editable desde /admin (con ?preview muestra el borrador del panel) */
+(function () { try { var d = (/[?&]preview/.test(location.search) || window.top !== window) && localStorage.getItem('bm_preview'); if (d) { window.BM_CONTENT = JSON.parse(d); return; } } catch (e) {}
+  document.write('<script src="assets/content.js?t=' + Math.floor(Date.now() / 6e4) + '"><\/script>'); })();</script>
+<script src="assets/data.js?v=5"></script>
+<script src="assets/app.js?v=8"></script>
 <script>
 const qs = new URLSearchParams(location.search);
 let cat = qs.get('cat') || '';
 const $ = id => document.getElementById(id);
-$('adimg').src = BM.img(12, 900, 700);
+const T = BM.C.proyectos;
+$('adimg').src = BM.img(T.adImg, 900, 700);
+$('desc').innerHTML = T.lead;
+$('adk').textContent = T.adKick; $('adt').innerHTML = T.adTitle; $('adp').innerHTML = T.adText;
 $('q').value = qs.get('q') || '';
 
 function renderFilters() {
@@ -58,9 +64,9 @@ function renderFilters() {
 function render() {
   renderFilters();
   const c = BM.CATS.find(x => x.id === cat);
-  $('ttl').textContent = c ? `Proyectos · ${c.name}` : 'Todos los proyectos';
+  $('ttl').textContent = c ? `Proyectos · ${c.name}` : T.title;
   $('crumb').innerHTML = c ? `<a href="proyectos.html">Proyectos</a><i class="fa-solid fa-chevron-right"></i>${c.name}` : 'Proyectos';
-  $('kick').textContent = c ? c.desc : 'Catálogo de obras';
+  $('kick').textContent = c ? c.desc : T.kick;
   document.title = (c ? c.name + ' — ' : 'Proyectos — ') + 'Bloque Maestro';
   const q = $('q').value.trim().toLowerCase(), st = $('st').value;
   let list = BM.PROJECTS.filter(p => (!cat || p.cat === cat) && (!st || p.status === st) &&

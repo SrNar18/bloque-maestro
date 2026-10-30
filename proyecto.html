@@ -11,20 +11,24 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="assets/styles.css?v=17">
+<link rel="stylesheet" href="assets/styles.css?v=18">
 </head>
 <body data-page="proyecto">
 <div class="glow"></div>
 <main class="w" id="app"></main>
 
-<script src="assets/data.js?v=4"></script>
-<script src="assets/app.js?v=7"></script>
+<script>/* Contenido editable desde /admin (con ?preview muestra el borrador del panel) */
+(function () { try { var d = (/[?&]preview/.test(location.search) || window.top !== window) && localStorage.getItem('bm_preview'); if (d) { window.BM_CONTENT = JSON.parse(d); return; } } catch (e) {}
+  document.write('<script src="assets/content.js?t=' + Math.floor(Date.now() / 6e4) + '"><\/script>'); })();</script>
+<script src="assets/data.js?v=5"></script>
+<script src="assets/app.js?v=8"></script>
 <script>
 const p = BM.byId(new URLSearchParams(location.search).get('id')) || BM.PROJECTS[0];
 document.title = `${p.short} — Bloque Maestro`;
 document.getElementById('canon').href = `https://bloquemaestro.com/proyecto.html?id=${p.id}`;
 const ph = BM.ph, initials = s => s.split(' ').filter(w => w.length > 2).slice(0, 2).map(w => w[0]).join('').toUpperCase();
 const related = BM.PROJECTS.filter(x => x.id !== p.id).sort((a, b) => (b.cat === p.cat) - (a.cat === p.cat)).slice(0, 3);
+const T = BM.C.proyecto;
 const SECTIONS = [['resumen', 'Resumen'], ['terreno', 'Análisis del terreno'], ['materiales', 'Materiales'], ['equipos', 'Equipos y maquinaria'], ['iluminacion', 'Iluminación'], ['sostenibilidad', 'Sostenibilidad'], ['avance', 'Avance de obra'], ['equipo', 'Quién lo hace'], ['galeria', 'Galería']];
 
 document.getElementById('app').innerHTML = `
@@ -59,12 +63,12 @@ document.getElementById('app').innerHTML = `
     <section id="equipo"><div class="kick">Equipo</div><h2>Quién lo hace</h2>
       <div class="team">${p.team.map(([r, n]) => `<div><span class="av">${initials(n)}</span><span><b>${n}</b><small>${r}</small></span></div>`).join('')}</div></section>
     <section id="galeria"><div class="kick">Galería</div><h2>Imágenes del proyecto</h2>
-      <div class="gal">${p.img.slice(0, 5).map((i, k) => ph(i, k ? 600 : 1000, k ? 400 : 800)).join('')}</div></section>
+      <div class="gal">${p.img.map((i, k) => ph(i, k ? 600 : 1000, k ? 400 : 800)).join('')}</div></section>
   </article>
 
   <aside class="aside"><div class="lead-card">
-    <div class="kick">Oportunidad</div><h3>¿Te interesa este proyecto?</h3>
-    <p>Solicita información y el equipo del proyecto te contactará directamente.</p>
+    <div class="kick">Oportunidad</div><h3>${T.leadTitle}</h3>
+    <p>${T.leadText}</p>
     <div class="owner"><span class="av">${p.owner.initials}</span><span><b>${p.owner.name}</b><small>${p.owner.type}</small></span></div>
     <a href="#contactar" class="btn">Solicitar información <i class="fa-solid fa-arrow-right"></i></a>
     <a href="#" class="btn-sec" onclick="event.preventDefault();this.innerHTML='<i class=\\'fa-solid fa-check\\'></i> Ficha en preparación'"><i class="fa-solid fa-file-arrow-down"></i> Descargar ficha PDF</a>
@@ -74,15 +78,15 @@ document.getElementById('app').innerHTML = `
 
 <section class="band bgx bg-light light" id="contactar" style="margin-top:20px;scroll-margin-top:90px">
   <div class="formbox rv">
-    <div class="side"><div class="kick">Solicitar información</div><h2>Me gustaría recibir más información sobre este proyecto</h2>
+    <div class="side"><div class="kick">Solicitar información</div><h2>${T.formTitle}</h2>
       <p>Tu solicitud llegará a <b style="color:#fff">${p.owner.name}</b> a través de Bloque Maestro.</p>
-      <ul><li><i class="fa-solid fa-check"></i>Respuesta habitual en menos de 48 h</li><li><i class="fa-solid fa-check"></i>Sin compromiso ni coste para ti</li><li><i class="fa-solid fa-check"></i>Tus datos solo se comparten con este promotor</li></ul></div>
+      <ul>${T.formBullets.map(t => `<li><i class="fa-solid fa-check"></i>${t}</li>`).join('')}</ul></div>
     <form class="lead" novalidate>
       <div class="f"><label>Nombre y apellidos <em>*</em></label><input name="nombre" required></div>
       <div class="f"><label>Empresa</label><input name="empresa"></div>
       <div class="f"><label>Correo electrónico <em>*</em></label><input type="email" name="email" required></div>
       <div class="f"><label>Teléfono</label><input type="tel" name="tel"></div>
-      <div class="f full"><label>Me interesa como…</label><div class="radios">${['Inversor', 'Proveedor', 'Profesional / técnico', 'Comprador', 'Prensa', 'Otro'].map((r, i) => `<label><input type="radio" name="perfil" ${i ? '' : 'checked'}><span>${r}</span></label>`).join('')}</div></div>
+      <div class="f full"><label>Me interesa como…</label><div class="radios">${T.profiles.map((r, i) => `<label><input type="radio" name="perfil" ${i ? '' : 'checked'}><span>${r}</span></label>`).join('')}</div></div>
       <div class="f full"><label>Mensaje</label><textarea name="msg" rows="4" placeholder="Cuéntanos qué te gustaría saber sobre ${p.short}…"></textarea></div>
       <label class="check"><input type="checkbox" required> Acepto la política de privacidad y que mis datos se compartan con el promotor de este proyecto.</label>
       <button class="btn" type="submit">Enviar solicitud <i class="fa-solid fa-paper-plane"></i></button>

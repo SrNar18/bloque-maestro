@@ -12,29 +12,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="assets/styles.css?v=17">
+<link rel="stylesheet" href="assets/styles.css?v=18">
 </head>
 <body data-page="anunciate">
 <div class="glow"></div>
 <main class="w" id="app"></main>
 
-<script src="assets/data.js?v=4"></script>
-<script src="assets/app.js?v=7"></script>
+<script>/* Contenido editable desde /admin (con ?preview muestra el borrador del panel) */
+(function () { try { var d = (/[?&]preview/.test(location.search) || window.top !== window) && localStorage.getItem('bm_preview'); if (d) { window.BM_CONTENT = JSON.parse(d); return; } } catch (e) {}
+  document.write('<script src="assets/content.js?t=' + Math.floor(Date.now() / 6e4) + '"><\/script>'); })();</script>
+<script src="assets/data.js?v=5"></script>
+<script src="assets/app.js?v=8"></script>
 <script>
-const P = BM.byId('torre-alameda');
-const PLANS = [
-  { id: 'Ficha', price: '290', tag: 'Para empezar', items: ['Ficha técnica completa', 'Formulario de contacto', 'Hasta 8 imágenes', 'Visible en el catálogo'] },
-  { id: 'Destacado', price: '590', tag: 'El más elegido', hi: true, items: ['Todo lo de Ficha', 'Galería ilimitada + vídeo', '2 apariciones en newsletter', 'Informe mensual de métricas'] },
-  { id: 'Portada', price: '1.190', tag: 'Máxima visibilidad', items: ['Todo lo de Destacado', 'Posición en la portada', 'Reportaje en vídeo en obra', 'Campaña en redes + gestor'] },
-];
-const FAQ = [
-  ['¿Quién puede anunciarse?', 'Promotoras, constructoras, estudios, fondos y particulares con un proyecto en diseño, en obra o finalizado.'],
-  ['¿Vendéis o intermediáis la inversión?', 'No. Somos un medio: mostramos tu proyecto y te enviamos los contactos. Cualquier acuerdo es directamente entre las partes.'],
-  ['¿Qué información necesitáis?', 'Datos generales, imágenes y lo técnico que quieras compartir. Nosotros redactamos la ficha y la apruebas antes de publicar.'],
-  ['¿Cómo recibo los contactos?', 'En tu correo, en tiempo real, con nombre, empresa, perfil y mensaje de cada interesado.'],
-  ['¿Hay permanencia?', 'No. Los planes son mensuales y puedes cancelar cuando quieras.'],
-  ['¿Cuánto tarda en publicarse?', 'Unas 48 h desde que apruebas la ficha. La redacción suele llevar de 3 a 5 días.'],
-];
+const T = BM.C.anunciate;
+const P = BM.byId(T.sample) || BM.PROJECTS[0];
+const PLANS = T.plans, FAQ = T.faq;
 const chips = (name, opts, sel) => opts.map(o => `<label><input type="radio" name="${name}" value="${o}" ${o === sel ? 'checked' : ''}><span>${o}</span></label>`).join('');
 
 document.getElementById('app').innerHTML = `
@@ -42,11 +34,11 @@ document.getElementById('app').innerHTML = `
 <section class="ad-hero full bgx bg-hero">
   <div class="rv">
     <div class="crumbs"><a href="index.html">Inicio</a><i class="fa-solid fa-chevron-right"></i>Anúnciate</div>
-    <div class="kick">Para promotores y constructoras</div>
-    <h1 class="display">Tu obra merece <em>ser vista</em>.</h1>
-    <p class="lead">Publica tu proyecto y recibe contactos de <b style="color:#fff">inversores, proveedores y profesionales</b> directamente en tu correo.</p>
+    <div class="kick">${T.kick}</div>
+    <h1 class="display">${T.title}</h1>
+    <p class="lead">${T.lead}</p>
     <div class="ctas"><a href="solicitud.html" class="btn">Anunciar mi proyecto <i class="fa-solid fa-arrow-right"></i></a><a href="#planes" class="btn-sec">Ver planes</a></div>
-    <div class="trust"><span><i class="fa-solid fa-check"></i> Sin permanencia</span><span><i class="fa-solid fa-check"></i> Redacción incluida</span><span><i class="fa-solid fa-check"></i> Online en 48 h</span></div>
+    <div class="trust">${T.trust.map(t => `<span><i class="fa-solid fa-check"></i> ${t}</span>`).join('')}</div>
   </div>
   <div class="ad-vis rv">
     <div class="mini-card">${BM.ph(P.img[0], 700, 520).replace('loading="lazy"', '')}<div class="mc-in"><span class="chip">${BM.status(P.status)}</span><b>${P.short}</b><small><i class="fa-solid fa-location-dot"></i> ${P.city}</small></div></div>
@@ -58,19 +50,14 @@ document.getElementById('app').innerHTML = `
 
 <!-- 2 · CIFRAS -->
 <section class="nums rv">
-  <div><b data-n="31" data-suf="K">0</b><span>lectores al mes</span></div>
-  <div><b data-n="37">0</b><span>contactos medios por ficha</span></div>
-  <div><b data-n="62" data-suf="%">0</b><span>lectores profesionales del sector</span></div>
-  <div><b data-n="48" data-suf=" h">0</b><span>para estar online</span></div>
+  ${T.nums.map(([n, suf, t]) => `<div><b data-n="${n}" data-suf="${suf}">0</b><span>${t}</span></div>`).join('')}
 </section>
 
 <!-- 3 · CÓMO FUNCIONA -->
 <section class="band bgx bg-blueprint">
-  <div class="sh rv"><h2><small class="mono">Cómo funciona</small>Tres pasos. Cero complicaciones.</h2></div>
+  <div class="sh rv"><h2><small class="mono">Cómo funciona</small>${T.flowTitle}</h2></div>
   <div class="flow">
-    <div class="fl rv"><span class="fn">1</span><i class="fa-solid fa-paper-plane"></i><h3>Nos cuentas tu proyecto</h3><p>Rellenas el formulario en 2 minutos.</p></div>
-    <div class="fl rv"><span class="fn">2</span><i class="fa-solid fa-pen-ruler"></i><h3>Creamos tu ficha</h3><p>Redactamos y diseñamos; tú la apruebas.</p></div>
-    <div class="fl rv"><span class="fn">3</span><i class="fa-solid fa-inbox"></i><h3>Recibes contactos</h3><p>Cada interesado llega directo a tu correo.</p></div>
+    ${T.flow.map(([ic, t, d], i) => `<div class="fl rv"><span class="fn">${i + 1}</span><i class="fa-solid ${ic}"></i><h3>${t}</h3><p>${d}</p></div>`).join('')}
   </div>
 </section>
 
@@ -97,14 +84,14 @@ document.getElementById('app').innerHTML = `
       <div class="pr"><small>$</small>${p.price}<span>/mes</span></div>
       <ul>${p.items.map(i => `<li><i class="fa-solid fa-check"></i>${i}</li>`).join('')}</ul>
       <a href="solicitud.html?plan=${p.id}" class="${p.hi ? 'btn' : 'btn-sec'}">Elegir ${p.id}</a></div>`).join('')}</div>
-  <p class="muted" style="text-align:center;font-size:13px;margin-top:22px">Precios orientativos en USD · impuestos no incluidos · sin permanencia</p>
+  <p class="muted" style="text-align:center;font-size:13px;margin-top:22px">${T.plansNote}</p>
 </section>
 
 <!-- 6 · TESTIMONIO -->
-<section class="band bgx bg-photo">
+<section class="band bgx bg-photo" style="--photo:url('${BM.img(BM.C.global.bandPhoto, 1800, 900)}')">
   <figure class="testi rv"><i class="fa-solid fa-quote-left"></i>
-    <blockquote>En el primer mes recibimos 23 solicitudes. Tres proveedores con los que hoy trabajamos llegaron desde la ficha de Bloque Maestro.</blockquote>
-    <figcaption><span class="av">GA</span><span><b>Andrés Villa</b><small>Director comercial · Grupo Inmobiliario Altavista</small></span></figcaption></figure>
+    <blockquote>${T.testimonial[0]}</blockquote>
+    <figcaption><span class="av">${T.testimonial[1].split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()}</span><span><b>${T.testimonial[1]}</b><small>${T.testimonial[2]}</small></span></figcaption></figure>
 </section>
 
 <!-- 8 · FAQ -->
@@ -115,7 +102,7 @@ document.getElementById('app').innerHTML = `
 
 <!-- 9 · CTA FINAL -->
 <section class="band">
-  <div class="final rv"><h2>¿Listo para que tu proyecto <em>llegue lejos</em>?</h2><a href="solicitud.html" class="btn">Anunciar mi proyecto <i class="fa-solid fa-arrow-right"></i></a></div>
+  <div class="final rv"><h2>${T.finalTitle}</h2><a href="solicitud.html" class="btn">Anunciar mi proyecto <i class="fa-solid fa-arrow-right"></i></a></div>
 </section>`;
 
 BM.reveal();

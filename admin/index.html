@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel · Bloque Maestro</title>
+<link rel="icon" href="../assets/icono_claro_sin_fondo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="admin.css?v=1">
+</head>
+<body>
+
+<!-- Acceso -->
+<section class="gate" id="login" hidden>
+  <form class="gate-box" id="loginf">
+    <img src="../assets/logo_claro_horizontal.png" alt="Bloque Maestro">
+    <h1>Panel de administración</h1>
+    <p class="muted">Entra para editar los textos, imágenes y proyectos de la web.</p>
+    <label>Usuario<input name="user" autocomplete="username" required></label>
+    <label>Contraseña<input name="pass" type="password" autocomplete="current-password" required></label>
+    <p class="err" id="loginerr"></p>
+    <button class="btn" type="submit">Entrar <i class="fa-solid fa-arrow-right"></i></button>
+    <a href="#setup" class="small-link">Configurar acceso</a>
+  </form>
+</section>
+
+<!-- Configuración inicial (la hace el desarrollador una vez) -->
+<section class="gate" id="setup" hidden>
+  <form class="gate-box wide" id="setupf">
+    <img src="../assets/logo_claro_horizontal.png" alt="Bloque Maestro">
+    <h1>Configurar acceso al panel</h1>
+    <p class="muted">El panel guarda los cambios en el repositorio de GitHub. Para ello necesita un <b>token</b> de GitHub que se guarda <b>cifrado con la contraseña</b>: sin la contraseña no se puede usar.</p>
+    <ol class="steps">
+      <li>Abre <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained tokens → Generate new token</a>.</li>
+      <li>En <b>Repository access</b> elige <i>Only select repositories</i> y marca <b id="repoName"></b>.</li>
+      <li>En <b>Permissions → Repository permissions</b> pon <b>Contents: Read and write</b>. Nada más.</li>
+      <li>Elige la caducidad que quieras, genera el token y pégalo aquí.</li>
+    </ol>
+    <label>Token de GitHub<input name="token" type="password" autocomplete="off" required placeholder="github_pat_…"></label>
+    <div class="row2">
+      <label>Usuario del panel<input name="user" autocomplete="off" required></label>
+      <label>Contraseña<input name="pass" type="password" autocomplete="new-password" required minlength="10"></label>
+    </div>
+    <label>Repetir contraseña<input name="pass2" type="password" autocomplete="new-password" required></label>
+    <p class="muted small">Usa una contraseña larga (10 caracteres o más). Si ya había un usuario con ese nombre, se sustituye.</p>
+    <p class="err" id="setuperr"></p>
+    <button class="btn" type="submit">Guardar acceso <i class="fa-solid fa-lock"></i></button>
+    <a href="#" class="small-link">Volver al inicio de sesión</a>
+  </form>
+</section>
+
+<!-- Panel -->
+<div class="app" id="app" hidden>
+  <aside class="side">
+    <a class="side-logo" href="../index.html" target="_blank" title="Abrir la web"><img src="../assets/logo_oscuro_horizontal.png" alt="Bloque Maestro"></a>
+    <nav id="nav"></nav>
+    <div class="side-foot"><span id="who"></span><button class="lnk" id="logout"><i class="fa-solid fa-right-from-bracket"></i> Salir</button></div>
+  </aside>
+  <main class="main">
+    <header class="top">
+      <button class="icon burger" id="burger" aria-label="Menú"><i class="fa-solid fa-bars"></i></button>
+      <h2 id="title"></h2>
+      <div class="top-act">
+        <span class="pending" id="pending" hidden></span>
+        <button class="btn-sec" id="discard" hidden><i class="fa-solid fa-rotate-left"></i> Descartar</button>
+        <button class="btn-sec" id="preview"><i class="fa-solid fa-eye"></i> Vista previa</button>
+        <button class="btn" id="publish" disabled><i class="fa-solid fa-cloud-arrow-up"></i> Publicar</button>
+      </div>
+    </header>
+    <div class="view" id="view"></div>
+  </main>
+</div>
+
+<!-- Vista previa -->
+<div class="pv" id="pv" hidden>
+  <div class="pv-bar"><b>Vista previa (sin publicar)</b><select id="pvpage"></select>
+    <div class="pv-dev"><button class="icon on" data-w="100%" title="Escritorio"><i class="fa-solid fa-desktop"></i></button><button class="icon" data-w="390px" title="Móvil"><i class="fa-solid fa-mobile-screen"></i></button></div>
+    <button class="icon" id="pvx" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="pv-frame"><iframe id="pvf" title="Vista previa"></iframe></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="admin.js?v=1"></script>
+</body>
+</html>

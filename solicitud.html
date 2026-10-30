@@ -12,26 +12,30 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="assets/styles.css?v=17">
+<link rel="stylesheet" href="assets/styles.css?v=18">
 </head>
 <body data-page="solicitud">
 <main class="w" id="app"></main>
 
-<script src="assets/data.js?v=4"></script>
-<script src="assets/app.js?v=7"></script>
+<script>/* Contenido editable desde /admin (con ?preview muestra el borrador del panel) */
+(function () { try { var d = (/[?&]preview/.test(location.search) || window.top !== window) && localStorage.getItem('bm_preview'); if (d) { window.BM_CONTENT = JSON.parse(d); return; } } catch (e) {}
+  document.write('<script src="assets/content.js?t=' + Math.floor(Date.now() / 6e4) + '"><\/script>'); })();</script>
+<script src="assets/data.js?v=5"></script>
+<script src="assets/app.js?v=8"></script>
 <script>
 const qs = new URLSearchParams(location.search);
-const PLANS = [['Ficha', '290', 'Ficha técnica + formulario de contacto'], ['Destacado', '590', 'Más alcance + newsletter + métricas'], ['Portada', '1.190', 'Portada, vídeo en obra y redes']];
+const T = BM.C.solicitud;
+const PLANS = BM.C.anunciate.plans.map(p => [p.id, p.price, p.short, p.hi]);
 const STEPS = ['Tu proyecto', 'Detalles', 'Objetivos y plan', 'Tus datos'];
-const plan0 = PLANS.some(p => p[0] === qs.get('plan')) ? qs.get('plan') : 'Destacado';
+const plan0 = PLANS.some(p => p[0] === qs.get('plan')) ? qs.get('plan') : (PLANS.find(p => p[3]) || PLANS[0])[0];
 const opt = (name, v, label, icon, checked, type = 'radio') => `<label class="opt"><input type="${type}" name="${name}" value="${v}" ${checked ? 'checked' : ''}><span>${icon ? `<i class="fa-solid ${icon}"></i>` : ''}${label}</span></label>`;
 
 document.getElementById('app').innerHTML = `
 <section class="sol-head bgx bg-hero">
   <div class="crumbs"><a href="index.html">Inicio</a><i class="fa-solid fa-chevron-right"></i><a href="anunciate.html">Anúnciate</a><i class="fa-solid fa-chevron-right"></i>Solicitud</div>
   <div class="kick">Solicitud de publicación</div>
-  <h1>Anuncia tu proyecto en <em>4 pasos</em></h1>
-  <p class="lead">Cuéntanos tu obra y te contactamos en menos de 24 h para preparar la ficha. Sin compromiso y sin permanencia.</p>
+  <h1>${T.title}</h1>
+  <p class="lead">${T.lead}</p>
   <div class="sol-trust"><span><i class="fa-solid fa-clock"></i> 3 minutos</span><span><i class="fa-solid fa-lock"></i> Datos protegidos</span><span><i class="fa-solid fa-pen-ruler"></i> Redacción incluida</span><span><i class="fa-solid fa-rotate-left"></i> Sin permanencia</span></div>
 </section>
 
@@ -70,7 +74,7 @@ document.getElementById('app').innerHTML = `
       <legend><small>Paso 3 de 4</small>¿Qué buscas con la publicación?</legend>
       <div class="f full"><label>Quiero recibir contactos de… <em>*</em></label><div class="opts cols3" data-min="1">${[['Inversores', 'fa-chart-line'], ['Proveedores', 'fa-truck-ramp-box'], ['Profesionales', 'fa-compass-drafting'], ['Compradores', 'fa-key'], ['Prensa', 'fa-newspaper'], ['Visibilidad de marca', 'fa-star']].map(([n, ic], i) => opt('busca', n, n, ic, i === 0, 'checkbox')).join('')}</div><small class="err-msg">Elige al menos una opción.</small></div>
       <div class="f full"><label>Plan de interés</label>
-        <div class="plan-pick">${PLANS.map(([n, pr, d]) => `<label class="pp"><input type="radio" name="plan" value="${n}" ${n === plan0 ? 'checked' : ''}><span>${n === 'Destacado' ? '<em>Más elegido</em>' : ''}<b>${n}</b><strong>$${pr}<small>/mes</small></strong><small>${d}</small></span></label>`).join('')}
+        <div class="plan-pick">${PLANS.map(([n, pr, d]) => `<label class="pp"><input type="radio" name="plan" value="${n}" ${n === plan0 ? 'checked' : ''}><span>${PLANS.find(p => p[0] === n)[3] ? '<em>Más elegido</em>' : ''}<b>${n}</b><strong>$${pr}<small>/mes</small></strong><small>${d}</small></span></label>`).join('')}
           <label class="pp"><input type="radio" name="plan" value="Asesoría"><span><b>Aún no lo sé</b><strong><i class="fa-regular fa-comments"></i></strong><small>Te asesoramos en la llamada</small></span></label></div>
         <a class="link" href="anunciate.html#planes" target="_blank" style="margin-top:10px">Comparar planes en detalle <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
     </fieldset>

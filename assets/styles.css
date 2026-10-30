@@ -81,7 +81,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 .bg-photo:before{
   background:linear-gradient(180deg,rgba(7,13,22,1) 0%,rgba(10,24,40,.82) 25%,rgba(10,24,40,.82) 75%,rgba(7,13,22,1) 100%),
-    url("https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1800&h=900&fit=crop&auto=format&q=60") center/cover}
+    var(--photo,url("https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1800&h=900&fit=crop&auto=format&q=60")) center/cover}
 
 /* ---------- Tema claro para secciones sobre papel ---------- */
 .light{--tx:#14202e;--mu:#5a6878;--bd:rgba(21,34,51,.11);--pan:#ffffff;color:var(--tx)}
@@ -327,7 +327,7 @@ table.mat td:first-child{color:#fff;font-weight:600}
 .team .av{width:46px;height:46px;border-radius:50%;flex:none;background:linear-gradient(135deg,var(--cyan),var(--navy));display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:13px}
 .team b{display:block;font-weight:600}
 .team small{color:var(--mu);font-size:13px}
-.gal{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:200px 200px;gap:10px;margin-top:20px}
+.gal{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:200px 200px;grid-auto-rows:160px;gap:10px;margin-top:20px}
 .gal .ph{border-radius:var(--r-sm);cursor:zoom-in}
 .gal .ph:first-child{grid-row:span 2}
 .gal .ph:hover img{transform:scale(1.05)}
@@ -447,7 +447,7 @@ form.lead.done .sent{display:block}
   .adband .txt,.formbox .side{padding:40px 26px}
   form.lead{grid-template-columns:1fr;padding:30px 22px}
   .spec,.eq,.team{grid-template-columns:1fr}
-  .gal{grid-template-columns:1fr 1fr;grid-template-rows:160px 120px 120px}
+  .gal{grid-template-columns:1fr 1fr;grid-template-rows:160px 120px 120px;grid-auto-rows:120px}
   .gal .ph:first-child{grid-column:span 2;grid-row:auto}
   .row{grid-template-columns:30px 1fr 80px;gap:14px}
   footer.site .g{grid-template-columns:1fr}

@@ -4,6 +4,7 @@
 (function () {
   const LOGO = 'assets/logo_oscuro_horizontal.png';
   const page = document.body.dataset.page || '';
+  const G = BM.C.global;
 
   /* ---------- Header (sticky) con desplegable de categorías ---------- */
   const dd = BM.CATS.map(c => `<a href="proyectos.html?cat=${c.id}"><i class="fa-solid ${c.icon}"></i><span><b>${c.name}</b><small>${c.desc}</small></span></a>`).join('');
@@ -22,7 +23,7 @@
     </nav>
     <div class="bar-actions">
       <button class="icon-btn" id="so-open" aria-label="Buscar proyectos" title="Buscar (Ctrl+K)"><i class="fa-solid fa-magnifying-glass"></i></button>
-      <a href="solicitud.html" class="btn btn-sm">Anuncia tu proyecto</a>
+      <a href="solicitud.html" class="btn btn-sm">${G.headerCta}</a>
     </div>
     <button class="burger" aria-label="Menú"><i class="fa-solid fa-bars"></i></button>
   </header>`;
@@ -30,26 +31,26 @@
   const footer = `
   <footer class="site"><div class="w">
     <div class="footer-cta">
-      <h3>¿Tienes una obra que <em>merece ser vista</em>?</h3>
-      <div class="r"><p>Publícala en Bloque Maestro y recibe contactos de inversores, proveedores y profesionales.</p>
+      <h3>${G.footerCtaTitle}</h3>
+      <div class="r"><p>${G.footerCtaText}</p>
         <div class="ctas" style="margin:0"><a href="solicitud.html" class="btn">Anunciar mi proyecto <i class="fa-solid fa-arrow-right"></i></a><a href="anunciate.html" class="btn-sec">Cómo funciona</a></div></div>
     </div>
     <div class="g">
-      <div><a class="logo" href="index.html"><img src="${LOGO}" alt="Bloque Maestro"></a><p>La revista de proyectos de construcción: quién construye qué, cómo y con qué.</p>
-        <div class="footer-big"><span><b>${BM.PROJECTS.length * 6}+</b><small>proyectos</small></span><span><b>31K</b><small>lectores/mes</small></span><span><b>14</b><small>países</small></span></div></div>
+      <div><a class="logo" href="index.html"><img src="${LOGO}" alt="Bloque Maestro"></a><p>${G.tagline}</p>
+        <div class="footer-big">${G.stats.map(([n, t]) => `<span><b>${n}</b><small>${t}</small></span>`).join('')}</div></div>
       <div><h5>Proyectos</h5>${BM.CATS.slice(0, 6).map(c => `<a href="proyectos.html?cat=${c.id}">${c.name}</a>`).join('')}</div>
       <div><h5>Revista</h5><a href="proyectos.html">Todos los proyectos</a><a href="destacados.html">Destacados</a><a href="destacados.html#ds1">Más consultados</a><a href="index.html#recientes">Recién publicados</a></div>
       <div><h5>Promotores</h5><a href="anunciate.html">Cómo funciona</a><a href="anunciate.html#planes">Planes y precios</a><a href="solicitud.html">Solicitar publicación</a><a href="contacto.html">Contacto</a></div>
-      <div><h5>Newsletter</h5><p style="line-height:1.6;margin-bottom:12px">Los nuevos proyectos, cada lunes.</p>
+      <div><h5>Newsletter</h5><p style="line-height:1.6;margin-bottom:12px">${G.newsletterText}</p>
         <form class="f-nl nlf"><input type="email" placeholder="tu@correo.com" required aria-label="Correo"><button class="btn btn-sm">OK</button></form>
-        <div class="f-social" style="margin-top:16px"><a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a><a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a><a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a><a href="mailto:hola@bloquemaestro.com" aria-label="Email"><i class="fa-regular fa-envelope"></i></a></div></div>
+        <div class="f-social" style="margin-top:16px"><a href="${G.instagram}" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a><a href="${G.linkedin}" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a><a href="${G.youtube}" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a><a href="mailto:${G.email}" aria-label="Email"><i class="fa-regular fa-envelope"></i></a></div></div>
     </div>
-    <div class="bt"><span>© 2026 Bloque Maestro · Construcción · Técnica · Innovación</span><span>Aviso legal · Privacidad · Cookies</span></div>
+    <div class="bt"><span>${G.copyright}</span><span>Aviso legal · Privacidad · Cookies</span></div>
   </div></footer>
   <div class="lightbox" id="lb"><img alt=""></div>
   <div class="search-ov" id="so" role="dialog" aria-label="Buscar proyectos"><div class="so-box">
     <div class="so-in"><i class="fa-solid fa-magnifying-glass"></i><input id="so-q" placeholder="Busca por proyecto, ciudad, material o empresa…" autocomplete="off"><button class="icon-btn" id="so-x" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button></div>
-    <div class="so-tags">${['Madera', 'Hormigón', 'Medellín', 'Rehabilitación', 'Puente', 'Fachada'].map(t => `<button class="btn-sec btn-sm" data-t="${t}">${t}</button>`).join('')}</div>
+    <div class="so-tags">${G.searchTags.map(t => `<button class="btn-sec btn-sm" data-t="${t}">${t}</button>`).join('')}</div>
     <div class="so-res" id="so-res" hidden></div>
   </div></div>`;
 

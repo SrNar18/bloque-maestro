@@ -12,15 +12,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="assets/styles.css?v=17">
+<link rel="stylesheet" href="assets/styles.css?v=18">
 </head>
 <body data-page="contacto">
 <main class="w" id="app"></main>
 
-<script src="assets/data.js?v=4"></script>
-<script src="assets/app.js?v=7"></script>
+<script>/* Contenido editable desde /admin (con ?preview muestra el borrador del panel) */
+(function () { try { var d = (/[?&]preview/.test(location.search) || window.top !== window) && localStorage.getItem('bm_preview'); if (d) { window.BM_CONTENT = JSON.parse(d); return; } } catch (e) {}
+  document.write('<script src="assets/content.js?t=' + Math.floor(Date.now() / 6e4) + '"><\/script>'); })();</script>
+<script src="assets/data.js?v=5"></script>
+<script src="assets/app.js?v=8"></script>
 <script>
 const MOTIVOS = [['general', 'Consulta general', 'fa-comment-dots'], ['proyecto', 'Sobre un proyecto publicado', 'fa-building'], ['publicidad', 'Publicidad y planes', 'fa-bullhorn'], ['prensa', 'Prensa y colaboraciones', 'fa-newspaper'], ['empleo', 'Trabajar con nosotros', 'fa-briefcase']];
+const T = BM.C.contacto, G = BM.C.global, tel = s => s.replace(/[^+\d]/g, '');
 const pre = new URLSearchParams(location.search);
 const m0 = MOTIVOS.some(m => m[0] === pre.get('motivo')) ? pre.get('motivo') : 'general';
 
@@ -29,18 +33,18 @@ document.getElementById('app').innerHTML = `
   <div>
     <div class="crumbs"><a href="index.html">Inicio</a><i class="fa-solid fa-chevron-right"></i>Contacto</div>
     <div class="kick">Contacto</div>
-    <h1>Hablemos de <em>construcción</em>.</h1>
-    <p class="lead">Un equipo de periodistas, arquitectos e ingenieros detrás de cada ficha. Escríbenos y te respondemos en menos de 24 horas laborables.</p>
+    <h1>${T.title}</h1>
+    <p class="lead">${T.lead}</p>
   </div>
-  <div class="ct-live"><span class="dot"></span><b>Equipo disponible</b><small>Lun – Vie · 8:00 a 18:00 (GMT-5)</small><div class="ct-faces">${['LM', 'AR', 'CS', 'JO'].map(i => `<span>${i}</span>`).join('')}<em>Respuesta media: 6 h</em></div></div>
+  <div class="ct-live"><span class="dot"></span><b>Equipo disponible</b><small>${T.availability}</small><div class="ct-faces">${['LM', 'AR', 'CS', 'JO'].map(i => `<span>${i}</span>`).join('')}<em>${T.response}</em></div></div>
 </section>
 
 <!-- Vías rápidas -->
 <section class="ct-ways">
   <a class="cw hi" href="solicitud.html"><i class="fa-solid fa-rocket"></i><b>Quiero anunciar mi proyecto</b><small>Ve directo a la solicitud en 4 pasos.</small><span class="link">Empezar solicitud <i class="fa-solid fa-arrow-right"></i></span></a>
-  <a class="cw" href="mailto:proyectos@bloquemaestro.com"><i class="fa-solid fa-building"></i><b>Proyectos y promotores</b><small>proyectos@bloquemaestro.com</small><span class="link">Escribir <i class="fa-solid fa-arrow-right"></i></span></a>
-  <a class="cw" href="mailto:prensa@bloquemaestro.com"><i class="fa-solid fa-newspaper"></i><b>Prensa y colaboraciones</b><small>prensa@bloquemaestro.com</small><span class="link">Escribir <i class="fa-solid fa-arrow-right"></i></span></a>
-  <a class="cw" href="https://wa.me/573000000000" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i><b>WhatsApp</b><small>+57 300 000 0000</small><span class="link">Abrir chat <i class="fa-solid fa-arrow-right"></i></span></a>
+  <a class="cw" href="mailto:${G.emailProyectos}"><i class="fa-solid fa-building"></i><b>Proyectos y promotores</b><small>${G.emailProyectos}</small><span class="link">Escribir <i class="fa-solid fa-arrow-right"></i></span></a>
+  <a class="cw" href="mailto:${G.emailPrensa}"><i class="fa-solid fa-newspaper"></i><b>Prensa y colaboraciones</b><small>${G.emailPrensa}</small><span class="link">Escribir <i class="fa-solid fa-arrow-right"></i></span></a>
+  <a class="cw" href="https://wa.me/${tel(G.whatsapp).replace('+', '')}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i><b>WhatsApp</b><small>${G.whatsapp}</small><span class="link">Abrir chat <i class="fa-solid fa-arrow-right"></i></span></a>
 </section>
 
 <!-- Formulario + datos -->
@@ -72,26 +76,21 @@ document.getElementById('app').innerHTML = `
         <circle cx="205" cy="118" r="34" fill="rgba(16,168,232,.18)"><animate attributeName="r" values="18;40;18" dur="2.6s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0;1" dur="2.6s" repeatCount="indefinite"/></circle>
         <circle cx="205" cy="118" r="9" fill="#10A8E8" stroke="#fff" stroke-width="3"/>
       </svg>
-      <div class="ci-addr"><b>Oficina central</b><small>Cra. 43A #1-50, El Poblado · Medellín, Colombia</small></div>
+      <div class="ci-addr"><b>Oficina central</b><small>${G.address}</small></div>
     </div>
     <ul class="ci-list">
-      <li><i class="fa-regular fa-envelope"></i><span><small>Email general</small><a href="mailto:hola@bloquemaestro.com">hola@bloquemaestro.com</a></span></li>
-      <li><i class="fa-solid fa-phone"></i><span><small>Teléfono</small><a href="tel:+576040000000">+57 604 000 0000</a></span></li>
-      <li><i class="fa-regular fa-clock"></i><span><small>Horario</small>Lunes a viernes · 8:00 – 18:00</span></li>
+      <li><i class="fa-regular fa-envelope"></i><span><small>Email general</small><a href="mailto:${G.email}">${G.email}</a></span></li>
+      <li><i class="fa-solid fa-phone"></i><span><small>Teléfono</small><a href="tel:${tel(G.phone)}">${G.phone}</a></span></li>
+      <li><i class="fa-regular fa-clock"></i><span><small>Horario</small>${G.hours}</span></li>
     </ul>
-    <div class="ci-social"><a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a><a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a><a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a><a href="#" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a></div>
+    <div class="ci-social"><a href="${G.instagram}" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a><a href="${G.linkedin}" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a><a href="${G.youtube}" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a><a href="${G.x}" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a></div>
   </aside>
 </section>
 
 <!-- Preguntas rápidas -->
 <section class="band bgx bg-light light faq">
   <div class="sh"><h2><small class="mono">Antes de escribir</small>Quizá ya tenemos la respuesta</h2></div>
-  <div class="faq2">${[
-    ['¿Cómo publico mi proyecto?', 'Rellena la <a class="link" href="solicitud.html">solicitud en 4 pasos</a>. Te llamamos en menos de 24 h para preparar la ficha.'],
-    ['¿Cuánto cuesta anunciarse?', 'Hay tres planes desde 290 USD al mes, sin permanencia. Puedes compararlos en <a class="link" href="anunciate.html#planes">planes y precios</a>.'],
-    ['Me interesa un proyecto, ¿con quién hablo?', 'Usa el formulario “Solicitar información” de la ficha del proyecto: llega directamente a su promotor.'],
-    ['¿Puedo corregir datos de una ficha publicada?', 'Sí. Escríbenos eligiendo “Sobre un proyecto publicado” y lo actualizamos en 48 h.'],
-  ].map(([q, a], i) => `<details ${i ? '' : 'open'}><summary>${q}<i class="fa-solid fa-plus"></i></summary><p>${a}</p></details>`).join('')}</div>
+  <div class="faq2">${T.faq.map(([q, a], i) => `<details ${i ? '' : 'open'}><summary>${q}<i class="fa-solid fa-plus"></i></summary><p>${a}</p></details>`).join('')}</div>
 </section>`;
 
 /* ---------- Formulario ---------- */

@@ -12,32 +12,30 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="assets/styles.css?v=17">
+<link rel="stylesheet" href="assets/styles.css?v=18">
 </head>
 <body data-page="destacados">
 <main class="w" id="app"></main>
 
-<script src="assets/data.js?v=4"></script>
-<script src="assets/app.js?v=7"></script>
+<script>/* Contenido editable desde /admin (con ?preview muestra el borrador del panel) */
+(function () { try { var d = (/[?&]preview/.test(location.search) || window.top !== window) && localStorage.getItem('bm_preview'); if (d) { window.BM_CONTENT = JSON.parse(d); return; } } catch (e) {}
+  document.write('<script src="assets/content.js?t=' + Math.floor(Date.now() / 6e4) + '"><\/script>'); })();</script>
+<script src="assets/data.js?v=5"></script>
+<script src="assets/app.js?v=8"></script>
 <script>
 const by = BM.byId, P = BM.PROJECTS;
 const catChip = c => `<span class="cchip" style="--c:${BM.CAT_COLOR[c]}">${BM.catName(c)}</span>`;
-const MONTH = by('puente-rio-claro');
-const TOP = ['torre-alameda', 'oficinas-prisma', 'ecobarrio-la-huerta', 'edificio-1928', 'hub-logistico-norte'].map(by);
-const VIEWS = [12480, 9870, 8215, 7340, 6920];
-const COLS = [
-  ['Megaobras de infraestructura', 'Puentes, túneles y estaciones que cambian el territorio.', 'fa-bridge', p => p.cat === 'infraestructura' || p.cat === 'industrial'],
-  ['Madera y bajo carbono', 'La construcción que reduce su huella sin renunciar a la escala.', 'fa-leaf', p => ['sostenible', 'equipamiento'].includes(p.cat)],
-  ['Rehabilitar es construir', 'Edificios con historia que vuelven a la vida.', 'fa-trowel-bricks', p => ['rehabilitacion', 'interiorismo'].includes(p.cat)],
-  ['Viviendas que inspiran', 'De la casa patio a la torre residencial.', 'fa-house-chimney', p => p.cat === 'residencial'],
-];
+const T = BM.C.destacados;
+const MONTH = by(T.month) || P[0];
+const RANK = T.top.filter(([id]) => by(id)), TOP = RANK.map(([id]) => by(id)), VIEWS = RANK.map(([, v]) => +v);
+const COLS = T.cols.map(([t, d, ic, cats]) => [t, d, ic, p => cats.includes(p.cat)]);
 
 document.getElementById('app').innerHTML = `
 <section class="phead bgx bg-hero ds-head">
   <div class="crumbs"><a href="index.html">Inicio</a><i class="fa-solid fa-chevron-right"></i>Destacados</div>
-  <div class="kick">Selección del editor · Octubre 2026</div>
-  <h1>Los proyectos que están <em>marcando 2026</em></h1>
-  <p class="lead">Cada mes nuestro equipo elige las obras más relevantes por su técnica, su escala o su impacto. Esta es la selección.</p>
+  <div class="kick">${T.kick}</div>
+  <h1>${T.title}</h1>
+  <p class="lead">${T.lead}</p>
   <nav class="ds-jump">${['Proyecto del mes', 'Más consultados', ...COLS.map(c => c[0])].map((n, i) => `<a href="#ds${i}" class="btn-sec btn-sm">${n}</a>`).join('')}</nav>
 </section>
 
@@ -49,7 +47,7 @@ document.getElementById('app').innerHTML = `
     <h2>${MONTH.title}</h2>
     <p>${MONTH.summary}</p>
     <blockquote>“${MONTH.quote[0]}”<small>— ${MONTH.quote[1]}</small></blockquote>
-    <div class="dm-facts"><span><small>Vano</small><b>${MONTH.area}</b></span><span><small>Inversión</small><b>${MONTH.budget}</b></span><span><small>Avance</small><b>${MONTH.progress} %</b></span></div>
+    <div class="dm-facts"><span><small>Superficie</small><b>${MONTH.area}</b></span><span><small>Inversión</small><b>${MONTH.budget}</b></span><span><small>Avance</small><b>${MONTH.progress} %</b></span></div>
     <div class="ctas" style="margin-top:6px"><a href="${BM.url(MONTH)}" class="btn">Ver la ficha completa <i class="fa-solid fa-arrow-right"></i></a><a href="${BM.url(MONTH)}#contactar" class="link">Solicitar información <i class="fa-solid fa-arrow-right"></i></a></div>
   </div>
 </section>
@@ -75,7 +73,7 @@ ${COLS.map(([t, d, ic, fn], i) => {
 
 <!-- CTA -->
 <section class="band">
-  <div class="final rv"><div class="kick" style="justify-content:center">Para promotores</div><h2>¿Quieres que tu proyecto <em>esté en esta selección</em>?</h2><p class="muted" style="margin:-10px 0 26px">El plan Portada incluye presencia garantizada en destacados.</p>
+  <div class="final rv"><div class="kick" style="justify-content:center">Para promotores</div><h2>${T.ctaTitle}</h2><p class="muted" style="margin:-10px 0 26px">${T.ctaText}</p>
     <div class="ctas" style="justify-content:center"><a href="solicitud.html?plan=Portada" class="btn">Anunciar mi proyecto <i class="fa-solid fa-arrow-right"></i></a><a href="anunciate.html#planes" class="btn-sec">Ver planes</a></div></div>
 </section>`;
 BM.reveal();
