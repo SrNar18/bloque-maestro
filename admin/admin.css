@@ -2,6 +2,7 @@
    BLOQUE MAESTRO · Panel de administración
    ========================================================= */
 :root{
+  color-scheme:light;
   --bg:#f3f5f8;--card:#fff;--ink:#0f1b2a;--muted:#66778a;--line:#e1e6ec;--soft:#f7f9fb;
   --cyan:#10A8E8;--cyan-d:#0b86bb;--navy:#0a1828;--ok:#16a36a;--bad:#e0473a;--warn:#e69a12;
   --r:12px;--sh:0 1px 2px rgba(15,27,42,.05),0 4px 16px rgba(15,27,42,.05);
@@ -12,8 +13,14 @@ h1,h2,h3,h4{font-family:Manrope,sans-serif;letter-spacing:-.02em;margin:0}
 a{color:var(--cyan-d)}
 [hidden]{display:none!important}
 .muted{color:var(--muted)}.small{font-size:13px}
-input,select,textarea{font:inherit;color:inherit;width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;transition:border-color .15s,box-shadow .15s}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(16,168,232,.15)}
+/* Campos: colores fijos en todos los estados (no dependen del tema del sistema ni del autocompletado) */
+input,select,textarea{font:inherit;color:var(--ink);-webkit-text-fill-color:var(--ink);opacity:1;width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;transition:border-color .15s,box-shadow .15s}
+input:hover,select:hover,textarea:hover{color:var(--ink);-webkit-text-fill-color:var(--ink);background:#fff;border-color:#c5ced8}
+input:focus,select:focus,textarea:focus{outline:none;color:var(--ink);-webkit-text-fill-color:var(--ink);background:#fff;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(16,168,232,.15)}
+input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus{-webkit-text-fill-color:var(--ink);-webkit-box-shadow:0 0 0 40px #fff inset;caret-color:var(--ink)}
+input[readonly]{background:var(--soft);color:var(--muted);-webkit-text-fill-color:var(--muted)}
+option{color:var(--ink);background:#fff}
+::placeholder{color:#9aa8b6;-webkit-text-fill-color:#9aa8b6}
 textarea{resize:vertical;min-height:84px;line-height:1.55}
 input[type=checkbox]{width:18px;height:18px;accent-color:var(--cyan);padding:0}
 input[type=color]{padding:2px;height:40px;width:56px}
@@ -146,6 +153,21 @@ label>input,label>select,label>textarea{margin-top:6px;font-weight:400;font-size
 .note i{color:var(--cyan-d);margin-top:3px}
 .note.ok{background:#e8f7ef;border-color:#b6e5cc}.note.ok i{color:var(--ok)}
 
+/* ---------- Ayudas de uso ---------- */
+.side nav a.changed:after{content:"";width:7px;height:7px;border-radius:50%;background:var(--warn);margin-left:8px;flex:none}
+.side nav a.changed:not(:has(em)):after{margin-left:auto}
+.drop{outline:2px dashed var(--cyan);outline-offset:4px;border-radius:12px;background:rgba(16,168,232,.06)}
+.gi.add-tile small{display:block;font-size:11px;margin-top:2px;color:var(--muted)}
+.note.warn{background:#fff6e6;border-color:#f5d9a6}.note.warn i{color:var(--warn)}
+.note.draft{margin:18px 28px 0;align-items:center;flex-wrap:wrap}
+.note.draft span{flex:1;min-width:220px}
+.draft-a{display:flex;gap:8px}
+.deploy{font-size:13px;font-weight:600;color:var(--cyan-d);display:flex;align-items:center;gap:6px}
+.deploy.ok{color:var(--ok)}
+.pw{position:relative;display:block}
+.pw input{padding-right:44px}
+.pw .eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);margin-top:3px}
+
 /* ---------- Móvil ---------- */
 @media (max-width:860px){
   .app{grid-template-columns:1fr}
@@ -161,4 +183,6 @@ label>input,label>select,label>textarea{margin-top:6px;font-weight:400;font-size
   .card{padding:16px}
   .thumb{width:110px}
   .tools .btn{margin-left:0}
+  .hide-sm{display:none}
+  .note.draft{margin:14px 16px 0}
 }

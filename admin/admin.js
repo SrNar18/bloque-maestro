@@ -103,6 +103,38 @@ window.BM_CONTENT = `;
     $('#publish').disabled = !d; $('#discard').hidden = !d; $('#pending').hidden = !d;
     $('#pending').textContent = 'Cambios sin publicar';
     $('#pvpending').hidden = !d || !pvEdit; $('#pvpub').disabled = !d;
+    navDots(); clearTimeout(draftT); draftT = setTimeout(saveLocalDraft, 600);
+  }
+  /* Punto naranja en el menú junto a cada sección con cambios */
+  function navDots() {
+    if (!STATE || !ORIG) return;
+    document.querySelectorAll('#nav a').forEach(a => {
+      const r = a.hash.slice(1), k = { proyectos: 'projects', sectores: 'cats' }[r] || (r.startsWith('pagina/') ? r.slice(7) : null);
+      a.classList.toggle('changed', !!k && JSON.stringify(STATE[k]) !== JSON.stringify(ORIG[k]));
+    });
+  }
+  /* Borrador automático en este navegador: sobrevive a recargas o a cerrar la pestaña sin publicar */
+  let draftT;
+  const DRAFT_KEY = () => `bm_draft_${DEMO ? 'demo' : CFG.repo}`;
+  function saveLocalDraft() {
+    if (!STATE) return;
+    try {
+      if (!isDirty()) return localStorage.removeItem(DRAFT_KEY());
+      const json = JSON.stringify(STATE), ups = Object.fromEntries(Object.entries(UPLOADS).filter(([p, u]) => !u.done && json.includes(`"${p}"`)));
+      try { localStorage.setItem(DRAFT_KEY(), JSON.stringify({ base: SHA, at: Date.now(), state: STATE, uploads: ups })); }
+      catch { localStorage.setItem(DRAFT_KEY(), JSON.stringify({ base: SHA, at: Date.now(), state: STATE, uploads: {} })); }
+    } catch {}
+  }
+  function offerDraft() {
+    let d; try { d = JSON.parse(localStorage.getItem(DRAFT_KEY())); } catch {}
+    if (!d || JSON.stringify(d.state) === JSON.stringify(ORIG)) return;
+    const when = new Date(d.at).toLocaleString('es', { dateStyle: 'medium', timeStyle: 'short' });
+    const bar = h('div', { className: 'note warn draft' }, ic('fa-clock-rotate-left'),
+      h('span', { html: `Tienes <b>cambios sin publicar</b> del ${when}.${d.base !== SHA ? ' Ojo: la web se ha publicado después; si los recuperas, sustituirán lo publicado.' : ''}` }),
+      h('div', { className: 'draft-a' },
+        h('button', { className: 'btn btn-sm', onclick: () => { STATE = d.state; Object.entries(d.uploads || {}).forEach(([p, u]) => UPLOADS[p] = u); bar.remove(); dirty(); route(); toast('Cambios recuperados. Revísalos y pulsa Publicar.'); } }, 'Recuperar'),
+        h('button', { className: 'btn-sec btn-sm', onclick: () => { try { localStorage.removeItem(DRAFT_KEY()); } catch {} bar.remove(); } }, 'Descartar')));
+    $('.main').insertBefore(bar, $('#view'));
   }
   addEventListener('beforeunload', e => { if (STATE && isDirty()) { e.preventDefault(); e.returnValue = ''; } });
 
@@ -134,6 +166,18 @@ window.BM_CONTENT = `;
         catch { toast('No se pudo leer la imagen. Prueba con un JPG o PNG.', true); res([]); }
       };
       inp.click();
+    });
+  }
+  /* Arrastrar y soltar imágenes sobre un campo de imagen o la galería */
+  function dropZone(el, onFiles) {
+    el.addEventListener('dragover', e => { if ([...e.dataTransfer.types].includes('Files')) { e.preventDefault(); el.classList.add('drop'); } });
+    el.addEventListener('dragleave', e => { if (!el.contains(e.relatedTarget)) el.classList.remove('drop'); });
+    el.addEventListener('drop', async e => {
+      e.preventDefault(); el.classList.remove('drop');
+      const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/'));
+      if (!files.length) return toast('Suelta un archivo de imagen (JPG, PNG o WebP).', true);
+      toast('Preparando imagen…');
+      try { onFiles(await Promise.all(files.map(processImage))); } catch { toast('No se pudo leer la imagen. Prueba con un JPG o PNG.', true); }
     });
   }
   const askUrl = () => { const u = prompt('Pega la dirección (URL) de la imagen:'); return u && /^https?:\/\//.test(u.trim()) ? u.trim() : null; };
@@ -172,8 +216,8 @@ window.BM_CONTENT = `;
         const draw = () => box.replaceChildren(thumb(obj[d.k]), h('div', { className: 'acts' },
           h('button', { type: 'button', className: 'btn-sec btn-sm', onclick: async () => { const [p] = await pickFiles(false); if (p) { set(p); draw(); } } }, ic('fa-upload'), 'Subir imagen'),
           h('button', { type: 'button', className: 'btn-sec btn-sm', onclick: () => { const u = askUrl(); if (u) { set(u); draw(); } } }, ic('fa-link'), 'Usar URL')));
-        draw();
-        return h('div', { className: `fld ${d.full ? 'full' : ''} ${d.wide ? 'wide' : ''}` }, h('label', {}, d.label), box, d.help ? h('span', { className: 'help muted small', html: d.help }) : null);
+        draw(); dropZone(box, ([p]) => { set(p); draw(); });
+        return h('div', { className: `fld ${d.full ? 'full' : ''} ${d.wide ? 'wide' : ''}` }, h('label', {}, d.label), box, h('span', { className: 'help muted small', html: d.help || 'También puedes arrastrar una imagen aquí.' }));
       }
       case 'gallery': {
         const box = h('div', { className: 'gal' });
@@ -184,9 +228,9 @@ window.BM_CONTENT = `;
             h('button', { type: 'button', className: 'icon', title: 'Mover a la derecha', disabled: i === arr.length - 1, onclick: () => { [arr[i + 1], arr[i]] = [arr[i], arr[i + 1]]; dirty(); draw(); } }, ic('fa-arrow-right')),
             h('button', { type: 'button', className: 'icon', title: 'Cambiar', onclick: async () => { const [p] = await pickFiles(false); if (p) { arr[i] = p; dirty(); draw(); } } }, ic('fa-pen')),
             h('button', { type: 'button', className: 'icon', title: 'Quitar', onclick: () => { if (arr.length > 1 || confirm('¿Quitar la única imagen?')) { arr.splice(i, 1); dirty(); draw(); } } }, ic('fa-trash')))))),
-          h('div', { className: 'gi add-tile', onclick: async () => { const ps = await pickFiles(true); if (ps.length) { arr.push(...ps); dirty(); draw(); } } }, h('div', {}, ic('fa-images'), 'Añadir imágenes')),
+          h('div', { className: 'gi add-tile', onclick: async () => { const ps = await pickFiles(true); if (ps.length) { arr.push(...ps); dirty(); draw(); } } }, h('div', {}, ic('fa-images'), 'Añadir imágenes', h('small', {}, 'o arrástralas aquí'))),
           h('div', { className: 'gi add-tile', onclick: () => { const u = askUrl(); if (u) { arr.push(u); dirty(); draw(); } } }, h('div', {}, ic('fa-link'), 'Añadir desde URL')));
-        draw();
+        draw(); dropZone(box, ps => { arr.push(...ps); dirty(); draw(); });
         return h('div', { className: 'fld full' }, d.label ? h('label', {}, d.label) : null, d.help ? h('span', { className: 'help muted small', html: d.help }) : null, box);
       }
       case 'cats': {
@@ -383,6 +427,7 @@ window.BM_CONTENT = `;
   /* ---------- Vistas ---------- */
   const view = () => $('#view');
   const setTitle = t => { $('#title').textContent = t; document.title = `${t} · Panel Bloque Maestro`; };
+  $('#live').onclick = () => open(`../${currentPage}`, '_blank', 'noopener');
   let currentPage = 'index.html';
 
   function viewProjects() {
@@ -482,6 +527,7 @@ window.BM_CONTENT = `;
       h('small', {}, 'Páginas'),
       ...Object.entries(PAGES).map(([k, p]) => a(`#pagina/${k}`, p.icon, p.name)),
       h('small', {}, 'Panel'), a('#ayuda', 'fa-circle-question', 'Ayuda'));
+    navDots();
   }
   function route() {
     if (!STATE) return;
@@ -569,12 +615,35 @@ window.BM_CONTENT = `;
         `Panel: actualizar contenido (${sessionStorage.getItem('bm_user') || 'admin'})`);
       imgs.forEach(([, u]) => u.done = true);
       SHA = (await readFile('assets/content.js')).sha; ORIG = clone(STATE);
+      try { localStorage.removeItem(DRAFT_KEY()); } catch {}
       toast('¡Publicado! La web se actualizará en 1–2 minutos.');
-      route();
+      route(); watchDeploy(json);
     } catch (e) { toast(e.message, true); }
     btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publicar'; dirty();
   };
-  $('#discard').onclick = () => { if (confirm('¿Descartar todos los cambios sin publicar?')) { STATE = clone(ORIG); dirty(); route(); } };
+  $('#discard').onclick = () => { if (confirm('¿Descartar todos los cambios sin publicar?')) { STATE = clone(ORIG); dirty(); route(); try { localStorage.removeItem(DRAFT_KEY()); } catch {} } };
+  addEventListener('keydown', e => {
+    if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 's' || !STATE) return;
+    e.preventDefault(); if (isDirty()) $('#publish').click(); else toast('No hay cambios que publicar.');
+  });
+  /* Comprueba cada 10 s si la web ya muestra lo publicado */
+  let deployT;
+  function watchDeploy(json) {
+    const st = $('#deploy'), t0 = Date.now(); clearTimeout(deployT);
+    st.hidden = false; st.className = 'deploy'; st.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Actualizando la web…';
+    const check = async () => {
+      try {
+        const txt = await (await fetch(`../assets/content.js?t=${Date.now()}`, { cache: 'no-store' })).text();
+        if (JSON.stringify(parseContent(txt)) === json) {
+          st.className = 'deploy ok'; st.innerHTML = '<i class="fa-solid fa-circle-check"></i> Ya está en la web';
+          toast('✓ Los cambios ya se ven en la web.'); deployT = setTimeout(() => st.hidden = true, 20000); return;
+        }
+      } catch {}
+      if (Date.now() - t0 > 5 * 60e3) { st.innerHTML = '<i class="fa-solid fa-clock"></i> Tarda más de lo normal: revisa la web en unos minutos'; return; }
+      deployT = setTimeout(check, 10000);
+    };
+    deployT = setTimeout(check, 15000);
+  }
 
   /* ---------- Acceso ---------- */
   const show = id => ['login', 'setup', 'app'].forEach(x => $('#' + x).hidden = x !== id);
@@ -586,7 +655,7 @@ window.BM_CONTENT = `;
       if (e.status === 401) { sessionStorage.clear(); show('login'); $('#loginerr').textContent = e.message; return; }
       $('#view').innerHTML = `<div class="note"><i class="fa-solid fa-triangle-exclamation"></i><span>No se pudo cargar el contenido: ${e.message}</span></div>`; return;
     }
-    dirty(); route();
+    dirty(); route(); offerDraft();
   }
   $('#loginf').onsubmit = async e => {
     e.preventDefault(); const f = e.target, err = $('#loginerr'); err.textContent = '';
@@ -622,6 +691,11 @@ window.BM_CONTENT = `;
     btn.disabled = false;
   };
   $('#logout').onclick = () => { if (STATE && isDirty() && !confirm('Tienes cambios sin publicar. ¿Salir igualmente?')) return; sessionStorage.clear(); STATE = null; location.hash = ''; location.reload(); };
+  document.querySelectorAll('input[type=password]').forEach(i => {
+    const b = h('button', { type: 'button', className: 'icon eye', title: 'Mostrar contraseña', onclick: () => { const on = i.type === 'password'; i.type = on ? 'text' : 'password'; b.firstChild.className = `fa-solid ${on ? 'fa-eye-slash' : 'fa-eye'}`; } }, ic('fa-eye'));
+    const parent = i.parentNode, next = i.nextSibling;
+    parent.insertBefore(h('span', { className: 'pw' }, i, b), next);
+  });
   $('#burger').onclick = () => $('#app').classList.toggle('menu');
   $('.side').addEventListener('click', e => { if (e.target === $('.side')) $('#app').classList.remove('menu'); });
 
